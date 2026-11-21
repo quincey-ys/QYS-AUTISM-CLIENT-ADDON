@@ -22,7 +22,7 @@ Standalone Fabric client utility mod for Minecraft Java 26.3. This is one indepe
 
 ## Shared settings screen
 
-Press O to open the unified QYS-UTILS settings screen. It contains AutoTotem and Mace Hitter tabs, opaque panels with squircle corners, and settings controls. Changes save immediately and again when the screen closes.
+Press O to open the unified QYS-UTILS settings screen. It contains AutoTotem and Mace Hitter tabs, opaque panels with squircle corners, and settings controls. The screen uses a bundled anti-aliased Lato font so it does not depend on fonts installed on your computer. Changes save immediately and again when the screen closes.
 
 ## Keybinds
 - T: Toggle AutoTotem
@@ -45,9 +45,4 @@ The AutoTotem config filename and property names are kept compatible with the or
 - Java 25
 
 ## Build
-Run Gradle 9.8.2 with Java 25 and execute gradle build. The distributable mod is written to build/libs/QYS-UTILS.jar.
-
-
-## UI typography
-
-The shared settings screen bundles a glyph-subsetted Clear Sans Regular TTF for smoother anti-aliased text. The font is included in the JAR under the Apache License 2.0; attribution and license copy are packaged in `META-INF/licenses/`.
+Run Gradle 9.8.2 with Java 25 and execute gradle build. The GitHub Actions workflow prepares the bundled Lato font and packages its complete license/attribution notice into the JAR. The distributable mod is written to build/libs/QYS-UTILS.jar.
