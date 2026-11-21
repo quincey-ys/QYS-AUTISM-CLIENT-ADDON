@@ -1,34 +1,20 @@
 {
   "schemaVersion": 1,
-  "id": "autism-mace-hitter",
+  "id": "qys_mace_hitter",
   "version": "${version}",
-  "name": "Mace Hitter",
-  "description": "KillAura-style mace slammer: instant smashes on shield blockers, no cooldown waiting",
-  "authors": [
-    "you"
-  ],
-  "custom": {
-    "autism:color": "220,90,90",
-    "modmenu": {
-      "parent": {
-        "id": "autism"
-      }
-    }
-  },
+  "name": "QYS Mace Hitter",
+  "description": "Standalone Fabric client mod for mace combat automation.",
+  "authors": ["quincey-ys"],
   "environment": "client",
   "entrypoints": {
     "client": [
-      "com.autismdev.macehitter.MaceHitterInit"
-    ],
-    "autism": [
-      "com.autismdev.macehitter.MaceHitterAddon"
+      "com.quinceyys.macehitter.MaceHitterClient"
     ]
   },
   "depends": {
     "java": ">=25",
     "minecraft": "${mc_compat}",
-    "fabricloader": ">=0.19.3",
-    "fabric-api": ">=${fabric_api_version}",
-    "autism": ">=${autism_api_version}"
+    "fabricloader": ">=0.20.1",
+    "fabric-api": "*"
   }
 }
