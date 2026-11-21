@@ -5,12 +5,12 @@ import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.util.InputConstants;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -137,8 +137,8 @@ public final class AutoTotemModule {
                 || player.hasEffect(MobEffects.SLOW_FALLING)
                 || player.hasEffect(MobEffects.LEVITATION)) return false;
 
-        float projected = player.fallDistance - (float) player.getDeltaMovement().y;
-        int damage = Math.max(0, (int) Math.ceil(projected - 3.0F));
+        double projected = player.fallDistance - player.getDeltaMovement().y;
+        int damage = Math.max(0, (int) Math.ceil(projected - 3.0));
         return damage > 0
                 && player.getHealth() + player.getAbsorptionAmount() - damage <= healthThreshold;
     }
@@ -181,8 +181,8 @@ public final class AutoTotemModule {
         if (player == null || client.gameMode == null) return false;
 
         int slotId = inventoryIndex < 9 ? inventoryIndex + 36 : inventoryIndex;
-        client.gameMode.handleInventoryMouseClick(
-                player.inventoryMenu.containerId, slotId, 40, ClickType.SWAP, player
+        client.gameMode.handleContainerInput(
+                player.inventoryMenu.containerId, slotId, 40, ContainerInput.SWAP, player
         );
         displacedSlot = inventoryIndex;
         return true;
@@ -193,8 +193,8 @@ public final class AutoTotemModule {
         if (player == null || client.gameMode == null) return;
 
         int slotId = inventoryIndex < 9 ? inventoryIndex + 36 : inventoryIndex;
-        client.gameMode.handleInventoryMouseClick(
-                player.inventoryMenu.containerId, slotId, 40, ClickType.SWAP, player
+        client.gameMode.handleContainerInput(
+                player.inventoryMenu.containerId, slotId, 40, ContainerInput.SWAP, player
         );
     }
 
