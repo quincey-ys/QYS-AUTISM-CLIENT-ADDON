@@ -46,3 +46,8 @@ The AutoTotem config filename and property names are kept compatible with the or
 
 ## Build
 Run Gradle 9.8.2 with Java 25 and execute gradle build. The distributable mod is written to build/libs/QYS-UTILS.jar.
+
+
+## UI typography
+
+The shared settings screen bundles a glyph-subsetted Clear Sans Regular TTF for smoother anti-aliased text. The font is included in the JAR under the Apache License 2.0; attribution and license copy are packaged in `META-INF/licenses/`.

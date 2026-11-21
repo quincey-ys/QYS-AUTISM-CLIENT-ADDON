@@ -1,0 +1,6 @@
+Clear Sans Regular
+Copyright 2012 Intel Corporation.
+
+This font file is a glyph-subsetted copy of Clear Sans Regular, redistributed under the Apache License, Version 2.0.
+Source project: https://01.org/clear-sans
+The complete Apache License 2.0 text is included at META-INF/licenses/ClearSans-APACHE-2.0.txt in this JAR.
