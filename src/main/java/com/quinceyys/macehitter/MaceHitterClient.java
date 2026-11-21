@@ -7,13 +7,13 @@ import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.MaceItem;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.network.chat.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -75,12 +75,7 @@ public final class MaceHitterClient implements ClientModInitializer {
                 currentTarget = null;
             }
             saveConfig();
-            if (client.player != null) {
-                client.player.displayClientMessage(
-                        net.minecraft.network.chat.Component.literal("Mace Hitter " + (enabled ? "enabled" : "disabled")),
-                        true
-                );
-            }
+            client.gui.setOverlayMessage(Component.literal("Mace Hitter " + (enabled ? "enabled" : "disabled")));
         }
 
         while (slamKey.consumeClick()) {
@@ -193,7 +188,6 @@ public final class MaceHitterClient implements ClientModInitializer {
 
         if (rotate) rotateTo(player, target);
         client.gameMode.attack(player, target);
-        player.swing(InteractionHand.MAIN_HAND);
         currentTarget = target;
     }
 
