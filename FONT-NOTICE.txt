@@ -1,0 +1,9 @@
+QYS-UTILS includes a subsetted Clear Sans Regular font for its settings interface.
+
+Clear Sans Regular
+Copyright 2012 Intel Corporation.
+Licensed under the Apache License, Version 2.0.
+Source: https://01.org/clear-sans
+License: https://www.apache.org/licenses/LICENSE-2.0
+
+The font was subsetted to the glyphs used by the QYS-UTILS interface.

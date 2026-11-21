@@ -5,8 +5,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FontDescription;
-import net.minecraft.resources.Identifier;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -16,12 +14,6 @@ import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 
 public final class QysUtilsConfigScreen extends Screen {
-    private static final FontDescription UI_FONT = new FontDescription.Resource(
-            Identifier.fromNamespaceAndPath("qys_utils", "ui"));
-
-    private static Component ui(String value) {
-        return Component.literal(value).withStyle(style -> style.withFont(UI_FONT));
-    }
     private final Screen parent;
     private final boolean maceTab;
 
@@ -35,7 +27,7 @@ public final class QysUtilsConfigScreen extends Screen {
     }
 
     private QysUtilsConfigScreen(Screen parent, boolean maceTab) {
-        super(ui("QYS-UTILS"));
+        super(Component.literal("QYS-UTILS"));
         this.parent = parent;
         this.maceTab = maceTab;
     }
@@ -49,9 +41,9 @@ public final class QysUtilsConfigScreen extends Screen {
 
         int tabY = panelY + 34;
         int tabWidth = Math.min(132, (panelWidth - 36) / 2);
-        addRenderableWidget(Button.builder(ui("AUTOTOTEM"), b -> openTab(false))
+        addRenderableWidget(Button.builder(Component.literal("AUTOTOTEM"), b -> openTab(false))
                 .bounds(panelX + 14, tabY, tabWidth, 20).build());
-        addRenderableWidget(Button.builder(ui("MACE HITTER"), b -> openTab(true))
+        addRenderableWidget(Button.builder(Component.literal("MACE HITTER"), b -> openTab(true))
                 .bounds(panelX + 22 + tabWidth, tabY, tabWidth, 20).build());
 
         int leftX = panelX + 14;
@@ -120,11 +112,11 @@ public final class QysUtilsConfigScreen extends Screen {
                     () -> MaceHitterModule.range, v -> MaceHitterModule.range = v); y += rowHeight;
             addIntStepper(rightX, y, colWidth, "Attack Delay (ticks)", 0, 20, 1,
                     () -> MaceHitterModule.delayTicks, v -> MaceHitterModule.delayTicks = v);
-            addRenderableWidget(Button.builder(ui("SLAM NOW  [G]"), b -> MaceHitterModule.slamNow())
+            addRenderableWidget(Button.builder(Component.literal("SLAM NOW  [G]"), b -> MaceHitterModule.slamNow())
                     .bounds(rightX, startY + rowHeight * 3, colWidth, 20).build());
         }
 
-        addRenderableWidget(Button.builder(ui("DONE  •  SAVE SETTINGS"), b -> onClose())
+        addRenderableWidget(Button.builder(Component.literal("DONE  •  SAVE SETTINGS"), b -> onClose())
                 .bounds(panelX + panelWidth / 2 - 94, panelY + panelHeight - 32, 188, 22).build());
     }
 
@@ -145,7 +137,7 @@ public final class QysUtilsConfigScreen extends Screen {
     private void addIntStepper(int x, int y, int width, String label, int min, int max, int step,
                                IntSupplier getter, IntConsumer setter) {
         Button[] valueButton = new Button[1];
-        addRenderableWidget(Button.builder(ui("−"), b -> {
+        addRenderableWidget(Button.builder(Component.literal("−"), b -> {
             setter.accept(Math.max(min, getter.getAsInt() - step));
             valueButton[0].setMessage(intText(label, getter.getAsInt()));
             persist();
@@ -155,7 +147,7 @@ public final class QysUtilsConfigScreen extends Screen {
                 .bounds(x + 24, y, width - 48, 19).build();
         addRenderableWidget(valueButton[0]);
 
-        addRenderableWidget(Button.builder(ui("+"), b -> {
+        addRenderableWidget(Button.builder(Component.literal("+"), b -> {
             setter.accept(Math.min(max, getter.getAsInt() + step));
             valueButton[0].setMessage(intText(label, getter.getAsInt()));
             persist();
@@ -196,19 +188,19 @@ public final class QysUtilsConfigScreen extends Screen {
     }
 
     private static Component toggleText(String label, boolean enabled) {
-        return ui(label + ": " + (enabled ? "ON" : "OFF"));
+        return Component.literal(label + ": " + (enabled ? "ON" : "OFF"));
     }
 
     private static Component intText(String label, int value) {
-        return ui(label + ": " + value);
+        return Component.literal(label + ": " + value);
     }
 
     private static Component doubleText(String label, double value) {
-        return ui(label + ": " + String.format(java.util.Locale.ROOT, "%.1f", value));
+        return Component.literal(label + ": " + String.format(java.util.Locale.ROOT, "%.1f", value));
     }
 
     private static Component modeText() {
-        return ui("Switch Mode: " + AutoTotemModule.switchMode);
+        return Component.literal("Switch Mode: " + AutoTotemModule.switchMode);
     }
 
     private static void persist() {
@@ -248,9 +240,9 @@ public final class QysUtilsConfigScreen extends Screen {
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         super.extractRenderState(graphics, mouseX, mouseY, a);
-        graphics.text(this.font, ui("QYS-UTILS"), panelX + 16, panelY + 9, 0xFFFFFFFF, true);
-        graphics.text(this.font, ui("UNIFIED CLIENT UTILITIES  /  26.3"), panelX + 116, panelY + 9, 0xFFD5DCEC, false);
-        graphics.text(this.font, ui(maceTab ? "MACE HITTER CONFIGURATION" : "AUTOTOTEM CONFIGURATION"),
+        graphics.text(this.font, "QYS-UTILS", panelX + 16, panelY + 9, 0xFFFFFFFF, true);
+        graphics.text(this.font, "UNIFIED CLIENT UTILITIES  /  26.3", panelX + 116, panelY + 9, 0xFFD5DCEC, false);
+        graphics.text(this.font, maceTab ? "MACE HITTER CONFIGURATION" : "AUTOTOTEM CONFIGURATION",
                 panelX + 16, panelY + 56, 0xFFE4EAF5, false);
     }
 
