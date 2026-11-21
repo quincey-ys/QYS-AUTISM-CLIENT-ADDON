@@ -15,7 +15,7 @@ import java.util.function.IntSupplier;
 
 public final class QysUtilsConfigScreen extends Screen {
     private final Screen parent;
-    private final boolean maceTab;
+    private final int selectedTab;
 
     private int panelX;
     private int panelY;
@@ -23,13 +23,13 @@ public final class QysUtilsConfigScreen extends Screen {
     private int panelHeight;
 
     public QysUtilsConfigScreen(Screen parent) {
-        this(parent, false);
+        this(parent, 0);
     }
 
-    private QysUtilsConfigScreen(Screen parent, boolean maceTab) {
+    private QysUtilsConfigScreen(Screen parent, int selectedTab) {
         super(Component.literal("QYS-UTILS"));
         this.parent = parent;
-        this.maceTab = maceTab;
+        this.selectedTab = selectedTab;
     }
 
     @Override
@@ -40,11 +40,14 @@ public final class QysUtilsConfigScreen extends Screen {
         panelY = (this.height - panelHeight) / 2;
 
         int tabY = panelY + 34;
-        int tabWidth = Math.min(132, (panelWidth - 36) / 2);
-        addRenderableWidget(Button.builder(Component.literal("AUTOTOTEM"), b -> openTab(false))
-                .bounds(panelX + 14, tabY, tabWidth, 20).build());
-        addRenderableWidget(Button.builder(Component.literal("MACE HITTER"), b -> openTab(true))
-                .bounds(panelX + 22 + tabWidth, tabY, tabWidth, 20).build());
+        int tabWidth = Math.min(132, (panelWidth - 32) / 3);
+        int tabStartX = panelX + 10;
+        addRenderableWidget(Button.builder(Component.literal("AUTO TOTEM"), b -> openTab(0))
+                .bounds(tabStartX, tabY, tabWidth, 20).build());
+        addRenderableWidget(Button.builder(Component.literal("MACE HITTER"), b -> openTab(1))
+                .bounds(tabStartX + tabWidth + 4, tabY, tabWidth, 20).build());
+        addRenderableWidget(Button.builder(Component.literal("CRYSTAL / ANCHOR"), b -> openTab(2))
+                .bounds(tabStartX + (tabWidth + 4) * 2, tabY, tabWidth, 20).build());
 
         int leftX = panelX + 14;
         int rightX = panelX + panelWidth / 2 + 4;
@@ -52,7 +55,7 @@ public final class QysUtilsConfigScreen extends Screen {
         int startY = panelY + 68;
         int rowHeight = 21;
 
-        if (!maceTab) {
+        if (selectedTab == 0) {
             int y = startY;
             addToggle(leftX, y, colWidth, "AutoTotem Enabled",
                     () -> AutoTotemModule.enabled, v -> AutoTotemModule.enabled = v); y += rowHeight;
@@ -84,7 +87,7 @@ public final class QysUtilsConfigScreen extends Screen {
                     () -> AutoTotemModule.reactionTicks, v -> AutoTotemModule.reactionTicks = v); y += rowHeight;
 
             addModeButton(rightX, y, colWidth);
-        } else {
+        } else if (selectedTab == 1) {
             int y = startY;
             addToggle(leftX, y, colWidth, "Mace Hitter Enabled",
                     () -> MaceHitterModule.enabled, v -> MaceHitterModule.enabled = v); y += rowHeight;
@@ -114,14 +117,23 @@ public final class QysUtilsConfigScreen extends Screen {
                     () -> MaceHitterModule.delayTicks, v -> MaceHitterModule.delayTicks = v);
             addRenderableWidget(Button.builder(Component.literal("SLAM NOW  [G]"), b -> MaceHitterModule.slamNow())
                     .bounds(rightX, startY + rowHeight * 3, colWidth, 20).build());
+        } else {
+            int y = startY;
+            addToggle(leftX, y, colWidth, "Break Your Crystals",
+                    () -> AutoPlaceCombatModule.autoBreakOwnCrystals,
+                    v -> AutoPlaceCombatModule.autoBreakOwnCrystals = v); y += rowHeight;
+            addToggle(leftX, y, colWidth, "Auto Anchor Combo",
+                    () -> AutoPlaceCombatModule.autoDetonateOwnAnchors,
+                    v -> AutoPlaceCombatModule.autoDetonateOwnAnchors = v);
+
         }
 
         addRenderableWidget(Button.builder(Component.literal("DONE  •  SAVE SETTINGS"), b -> onClose())
                 .bounds(panelX + panelWidth / 2 - 94, panelY + panelHeight - 32, 188, 22).build());
     }
 
-    private void openTab(boolean showMace) {
-        Minecraft.getInstance().gui.setScreen(new QysUtilsConfigScreen(parent, showMace));
+    private void openTab(int tab) {
+        Minecraft.getInstance().gui.setScreen(new QysUtilsConfigScreen(parent, tab));
     }
 
     private void addToggle(int x, int y, int width, String label, BooleanSupplier getter, Consumer<Boolean> setter) {
@@ -206,6 +218,7 @@ public final class QysUtilsConfigScreen extends Screen {
     private static void persist() {
         AutoTotemModule.saveConfig();
         MaceHitterModule.saveConfig();
+        AutoPlaceCombatModule.saveConfig();
     }
 
     private void fillSquircle(GuiGraphicsExtractor graphics, int x, int y, int width, int height,
@@ -242,8 +255,25 @@ public final class QysUtilsConfigScreen extends Screen {
         super.extractRenderState(graphics, mouseX, mouseY, a);
         graphics.text(this.font, "QYS-UTILS", panelX + 16, panelY + 9, 0xFFFFFFFF, true);
         graphics.text(this.font, "UNIFIED CLIENT UTILITIES  /  26.3", panelX + 116, panelY + 9, 0xFFD5DCEC, false);
-        graphics.text(this.font, maceTab ? "MACE HITTER CONFIGURATION" : "AUTOTOTEM CONFIGURATION",
-                panelX + 16, panelY + 56, 0xFFE4EAF5, false);
+        String title = switch (selectedTab) {
+            case 1 -> "MACE HITTER CONFIGURATION";
+            case 2 -> "CRYSTAL / ANCHOR CONFIGURATION";
+            default -> "AUTOTOTEM CONFIGURATION";
+        };
+        graphics.text(this.font, title, panelX + 16, panelY + 56, 0xFFE4EAF5, false);
+
+        if (selectedTab == 2) {
+            int infoX = panelX + panelWidth / 2 + 18;
+            graphics.text(this.font, "CRYSTAL BREAK", infoX, panelY + 82, 0xFFE4EAF5, true);
+            graphics.text(this.font, "Only your own recent placement is matched.", infoX, panelY + 100, 0xFFD5DCEC, false);
+            graphics.text(this.font, "It breaks as soon as the entity loads,", infoX, panelY + 114, 0xFFD5DCEC, false);
+            graphics.text(this.font, "only while right-click is still held.", infoX, panelY + 128, 0xFFD5DCEC, false);
+            graphics.text(this.font, "No rotation or crystal aiming.", infoX, panelY + 142, 0xFFD5DCEC, false);
+            graphics.text(this.font, "ANCHOR COMBO", infoX, panelY + 174, 0xFFE4EAF5, true);
+            graphics.text(this.font, "Uses the first Glowstone in your hotbar,", infoX, panelY + 192, 0xFFD5DCEC, false);
+            graphics.text(this.font, "then returns to the anchor's original slot.", infoX, panelY + 206, 0xFFD5DCEC, false);
+            graphics.text(this.font, "Skipped where respawn anchors work.", infoX, panelY + 220, 0xFFD5DCEC, false);
+        }
     }
 
     @Override
