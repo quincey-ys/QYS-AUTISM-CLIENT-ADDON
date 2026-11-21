@@ -12,6 +12,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -133,7 +134,7 @@ public final class AutoPlaceCombatModule {
 
             // Never perform the final click in a dimension where anchors are safe respawn points.
             iterator.remove();
-            if (client.level.dimensionType().respawnAnchorWorks()) continue;
+            if (client.level.dimension().equals(Level.NETHER)) continue;
 
             int glowstoneSlot = findHotbarItem(client.player, Items.GLOWSTONE);
             if (glowstoneSlot < 0) continue;
