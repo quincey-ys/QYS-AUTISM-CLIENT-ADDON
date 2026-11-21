@@ -224,7 +224,7 @@ public final class QysUtilsConfigScreen extends Screen {
     }
 
     @Override
-    protected void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         graphics.fill(0, 0, this.width, this.height, 0xB8000000);
         fillSquircle(graphics, panelX, panelY, panelWidth, panelHeight, 18, 0xFF141923);
         graphics.fill(panelX + 18, panelY + 2, panelX + panelWidth - 18, panelY + 28, 0xFF293449);
