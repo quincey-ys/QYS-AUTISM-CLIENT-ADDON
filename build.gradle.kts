@@ -3,9 +3,9 @@ plugins {
 }
 
 base {
-    archivesName = properties["archives_base_name"] as String
+    archivesName = "QYS-UTILS"
     version = libs.versions.mod.version.get()
-    group = properties["maven_group"] as String
+    group = "com.quinceyys.utils"
 }
 
 repositories {
@@ -44,5 +44,9 @@ tasks {
     withType<JavaCompile> {
         options.encoding = "UTF-8"
         options.release.set(25)
+    }
+
+    jar {
+        archiveFileName.set("QYS-UTILS.jar")
     }
 }

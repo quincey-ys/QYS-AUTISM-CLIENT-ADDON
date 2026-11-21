@@ -1,12 +1,13 @@
-name: Build QYS Mace Hitter
+name: Build QYS-UTILS
 
 on:
   push:
     branches:
       - standalone-26.3
+      - qys-utils-26.3
   pull_request:
     branches:
-      - standalone-26.3
+      - qys-utils-26.3
   workflow_dispatch:
 
 permissions:
@@ -19,7 +20,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up Java 25
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '25'
@@ -29,12 +30,10 @@ jobs:
           gradle-version: '9.8.2'
       - name: Build
         run: gradle build --no-daemon
-      - name: Upload mod JARs
+      - name: Upload QYS-UTILS JAR
         uses: actions/upload-artifact@v4
         with:
-          name: QYS-Mace-Hitter-26.3
-          path: |
-            build/libs/*.jar
-            !build/libs/*-sources.jar
+          name: QYS-UTILS-26.3
+          path: build/libs/QYS-UTILS.jar
           if-no-files-found: error
           retention-days: 14

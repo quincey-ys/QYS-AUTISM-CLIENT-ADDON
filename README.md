@@ -1,54 +1,48 @@
-# QYS Mace Hitter
+# QYS-UTILS
 
-A standalone Fabric client mod for Minecraft 26.3. It is **not an AUTISM Client addon** and has no AUTISM Client dependency.
+Standalone Fabric client utility mod for Minecraft Java 26.3. This is one independent mod JAR, not an AUTISM Client addon.
 
-## Features
+## Included modules
 
+### AutoTotem
+- Smart, Switch, and PickUp modes.
+- Health threshold and projected fall-damage triggers.
+- Missing-armor trigger.
+- Safety threshold, safe switch-back delay, and blast-resistant-hole check.
+- Optional Elytra ignore.
+- Existing AutoTotem settings are retained in config/autism-autototem.properties.
+
+### Mace Hitter
 - Nearest-target selection with configurable range.
 - Player-only or all-living-entity targeting.
 - Optional line-of-sight and teammate checks.
-- Automatic hotbar mace selection.
-- Automatic jump assistance for falling mace hits.
-- Optional falling-only attacks.
-- Shield-blocker priority attacks.
-- Configurable tick delay.
-- Manual **Slam Now** action.
+- Automatic hotbar mace selection and jump assistance.
+- Optional falling-only attacks and shield-stun priority.
+- Configurable attack delay and manual Slam Now action.
+
+## Shared settings screen
+
+Press O to open the unified QYS-UTILS settings screen. It contains AutoTotem and Mace Hitter tabs, opaque panels with squircle corners, and settings controls. Changes save immediately and again when the screen closes.
 
 ## Keybinds
+- T: Toggle AutoTotem
+- O: Open QYS-UTILS settings
+- R: Toggle Mace Hitter
+- G: Slam Now
 
-| Key | Action |
-|---|---|
-| R | Toggle Mace Hitter |
-| G | Slam Now |
+All keybinds can be changed under Options > Controls > Key Binds.
 
-Change these in **Options → Controls → Key Binds**.
+## Configuration files
+- config/autism-autototem.properties
+- config/qys-mace-hitter.properties
 
-## Configuration
-
-The mod creates `config/qys-mace-hitter.properties` on first launch. Close Minecraft before editing it. Changes are loaded on the next launch.
-
-| Property | Default | Meaning |
-|---|---:|---|
-| enabled | false | Start enabled |
-| range | 3.2 | Target range (1.0–6.0) |
-| delayTicks | 0 | Delay between attacks (0–20) |
-| rotate | true | Rotate toward target |
-| autoSwap | true | Select a mace from the hotbar |
-| autoJump | true | Jump automatically |
-| fallingOnly | false | Attack only while falling, except shield-stun priority |
-| shieldStun | true | Prioritize shield blockers |
-| requireMace | false | Do not attack unless a mace is available |
-| ignoreWalls | false | Ignore line of sight |
-| playersOnly | true | Only target players |
-| ignoreTeammates | true | Skip allied players |
+The AutoTotem config filename and property names are kept compatible with the original QYS AutoTotem config.
 
 ## Requirements
-
 - Minecraft Java Edition 26.3
 - Fabric Loader 0.20.1 or newer
 - Fabric API for 26.3
 - Java 25
 
 ## Build
-
-Run `gradle build` with Gradle 9.8.2 and Java 25. The JAR is written to `build/libs/`.
+Run Gradle 9.8.2 with Java 25 and execute gradle build. The distributable mod is written to build/libs/QYS-UTILS.jar.
