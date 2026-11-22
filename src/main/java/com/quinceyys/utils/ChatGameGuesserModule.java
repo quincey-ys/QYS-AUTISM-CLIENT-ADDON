@@ -246,8 +246,26 @@ public final class ChatGameGuesserModule {
                 || lower.contains("find the number")
                 || lower.contains("pick the number")
                 || lower.contains("what is")
+                || lower.contains("what was")
+                || lower.contains("what are")
+                || lower.contains("what does")
+                || lower.contains("what word")
                 || lower.contains("who is")
+                || lower.contains("who was")
+                || lower.contains("who created")
+                || lower.contains("who made")
+                || lower.contains("when was")
+                || lower.contains("when did")
+                || lower.contains("what year")
+                || lower.contains("where is")
+                || lower.contains("where was")
                 || lower.contains("which mob")
+                || lower.contains("which item")
+                || lower.contains("which planet")
+                || lower.contains("how many")
+                || lower.contains("how old")
+                || lower.contains("how tall")
+                || lower.contains("how big")
                 || lower.contains("complete the");
     }
 
@@ -310,11 +328,26 @@ public final class ChatGameGuesserModule {
     }
 
     private static String solveTrivia(String message) {
-        String lower = message.toLowerCase(Locale.ROOT);
-        for (Map.Entry<String, String> entry : TRIVIA.entrySet()) {
-            if (lower.contains(entry.getKey())) return entry.getValue();
+        String normalized = normalizeTriviaText(message);
+        if (normalized.isEmpty()) return null;
+
+        // Prefer the most specific phrase so a broad alias cannot override a precise answer.
+        List<Map.Entry<String, String>> entries = new ArrayList<>(TRIVIA.entrySet());
+        entries.sort((left, right) -> Integer.compare(right.getKey().length(), left.getKey().length()));
+        for (Map.Entry<String, String> entry : entries) {
+            if (normalized.contains(normalizeTriviaText(entry.getKey()))) {
+                return entry.getValue();
+            }
         }
         return null;
+    }
+
+    private static String normalizeTriviaText(String value) {
+        return value.toLowerCase(Locale.ROOT)
+                .replaceAll("(?i)§[0-9A-FK-OR]", "")
+                .replaceAll("[^\\p{L}\\p{N}]+", " ")
+                .replaceAll("\\s+", " ")
+                .trim();
     }
 
     private static boolean looksLikeTrivia(String message) {
@@ -346,6 +379,37 @@ public final class ChatGameGuesserModule {
 
     private static Map<String, String> buildTrivia() {
         Map<String, String> result = new HashMap<>();
+
+        // Minecraft history and development.
+        result.put("who created minecraft", "Markus Persson (Notch)");
+        result.put("who is the creator of minecraft", "Markus Persson (Notch)");
+        result.put("who made minecraft", "Markus Persson (Notch)");
+        result.put("who developed minecraft", "Mojang Studios; it was originally created by Markus Persson (Notch)");
+        result.put("when was minecraft made", "The first public version was released on May 17, 2009; the full game launched on November 18, 2011");
+        result.put("when was minecraft created", "Development began in 2009; the first public version was released on May 17, 2009");
+        result.put("when did minecraft come out", "The first public version came out on May 17, 2009; the full release was November 18, 2011");
+        result.put("when did minecraft first come out", "May 17, 2009 (first public version)");
+        result.put("when was minecraft first released", "May 17, 2009 (first public version)");
+        result.put("what year was minecraft made", "2009");
+        result.put("what year was minecraft created", "2009");
+        result.put("what year did minecraft come out", "2009 (first public version)");
+        result.put("what year was minecraft released", "2009 (first public version); 2011 was the full release");
+        result.put("when was minecraft officially released", "November 18, 2011 (full release)");
+        result.put("when did minecraft officially release", "November 18, 2011");
+        result.put("when was the full release of minecraft", "November 18, 2011");
+        result.put("what was minecraft originally called", "Cave Game");
+        result.put("what was minecraft first called", "Cave Game");
+        result.put("what is minecraft original name", "Cave Game");
+        result.put("what company owns minecraft", "Microsoft, which acquired Mojang in 2014");
+        result.put("who owns minecraft", "Microsoft");
+        result.put("what year did microsoft buy mojang", "2014");
+        result.put("when did microsoft buy mojang", "2014");
+        result.put("how much did microsoft buy mojang for", "About 2.5 billion US dollars");
+        result.put("what does notch mean", "Notch is the nickname of Minecraft's original creator, Markus Persson");
+        result.put("what is the name of minecraft final boss", "Ender Dragon");
+        result.put("who is minecraft final boss", "Ender Dragon");
+
+        // Minecraft gameplay facts.
         result.put("what mob explodes", "Creeper");
         result.put("which mob explodes", "Creeper");
         result.put("what mob shoots exploding fireballs", "Ghast");
@@ -366,10 +430,110 @@ public final class ChatGameGuesserModule {
         result.put("which mob guards ancient cities", "Warden");
         result.put("what item is needed to activate an end portal", "Eye of Ender");
         result.put("which item activates the end portal", "Eye of Ender");
-        result.put("who created minecraft", "Markus Persson");
-        result.put("who is the creator of minecraft", "Markus Persson");
-        result.put("what is the name of minecraft's final boss", "Ender Dragon");
-        result.put("who is minecraft's final boss", "Ender Dragon");
+        result.put("what does a creeper drop", "Gunpowder");
+        result.put("what do creepers drop", "Gunpowder");
+        result.put("what do you use to tame a wolf", "Bones");
+        result.put("what food tames a cat", "Raw cod or raw salmon");
+        result.put("what item is used to tame a horse", "Horses are tamed by repeatedly mounting them; food can help");
+        result.put("what is the strongest material for tools", "Netherite");
+        result.put("what block is the end portal frame made of", "End Portal Frame");
+        result.put("what mob can teleport", "Enderman");
+        result.put("which mob can teleport", "Enderman");
+        result.put("what is the name of the dimension with piglins", "The Nether");
+        result.put("what dimension do piglins live in", "The Nether");
+        result.put("what item do you need to make an enchanting table", "A book, two diamonds, and four obsidian");
+        result.put("how many eyes of ender activate a portal", "Up to 12");
+        result.put("how many eyes of ender are needed for the end portal", "Up to 12; some frames may already contain eyes");
+        result.put("what is the rare blue mob in minecraft", "The Allay is a rare blue flying helper mob");
+        result.put("what mob carries a trident", "Drowned");
+        result.put("which mob carries a trident", "Drowned");
+        result.put("what do you need to charge a respawn anchor", "Glowstone");
+        result.put("what item charges a respawn anchor", "Glowstone");
+        result.put("what happens if you use a bed in the nether", "It explodes");
+        result.put("what happens when you sleep in the nether", "The bed explodes");
+        result.put("what happens if you use a bed in the end", "It explodes");
+        result.put("what mob drops a wither skeleton skull", "Wither Skeleton");
+        result.put("which mob drops a wither skeleton skull", "Wither Skeleton");
+
+        // General knowledge and quick fun facts.
+        result.put("what is the largest planet", "Jupiter");
+        result.put("which is the largest planet", "Jupiter");
+        result.put("what planet is the biggest", "Jupiter");
+        result.put("what planet is known as the red planet", "Mars");
+        result.put("which planet is called the red planet", "Mars");
+        result.put("what is the closest planet to the sun", "Mercury");
+        result.put("which planet is closest to the sun", "Mercury");
+        result.put("what is the hottest planet", "Venus");
+        result.put("which planet is the hottest", "Venus");
+        result.put("what is the largest ocean", "The Pacific Ocean");
+        result.put("which is the largest ocean", "The Pacific Ocean");
+        result.put("what is the tallest mountain", "Mount Everest (highest above sea level)");
+        result.put("what is the highest mountain above sea level", "Mount Everest");
+        result.put("what is the capital of japan", "Tokyo");
+        result.put("what is japan capital", "Tokyo");
+        result.put("what is the capital of france", "Paris");
+        result.put("what is the capital of philippines", "Manila");
+        result.put("what is the capital of italy", "Rome");
+        result.put("what is the capital of australia", "Canberra");
+        result.put("what is the capital of canada", "Ottawa");
+        result.put("what is the capital of south korea", "Seoul");
+        result.put("what is the capital of the united kingdom", "London");
+        result.put("what is the chemical formula for water", "H2O");
+        result.put("what is the formula for water", "H2O");
+        result.put("what does h2o stand for", "Water");
+        result.put("what is the chemical symbol for gold", "Au");
+        result.put("what is the chemical symbol for oxygen", "O");
+        result.put("what is the chemical symbol for iron", "Fe");
+        result.put("what is the smallest prime number", "2");
+        result.put("what is the only even prime number", "2");
+        result.put("how many sides does a hexagon have", "6");
+        result.put("how many sides does an octagon have", "8");
+        result.put("how many bones does an adult human have", "Usually 206");
+        result.put("how many bones are in the human body", "An adult usually has 206 bones");
+        result.put("how many chambers does the human heart have", "4");
+        result.put("how many hearts does an octopus have", "3");
+        result.put("what color is an octopus blood", "Blue");
+        result.put("what is the fastest land animal", "Cheetah");
+        result.put("which is the fastest land animal", "Cheetah");
+        result.put("what is the largest mammal", "Blue whale");
+        result.put("which is the largest mammal", "Blue whale");
+        result.put("what animal has the longest neck", "Giraffe");
+        result.put("what gas do plants absorb", "Carbon dioxide");
+        result.put("what gas do plants take in", "Carbon dioxide");
+        result.put("what gas do humans breathe in", "Oxygen");
+        result.put("what is the hardest natural substance", "Diamond");
+        result.put("what is the hardest natural mineral", "Diamond");
+        result.put("what is the speed of light", "299,792,458 metres per second in a vacuum");
+        result.put("how many colors are in a rainbow", "Traditionally 7");
+        result.put("what is the smallest continent", "Australia");
+        result.put("what is the largest continent", "Asia");
+        result.put("what is the largest country by area", "Russia");
+        result.put("what is the largest desert", "Antarctica (the largest desert overall); the Sahara is the largest hot desert");
+        result.put("what is the currency of japan", "Yen");
+        result.put("what is the currency of the philippines", "Philippine peso");
+        result.put("what is the currency of the united states", "US dollar");
+        result.put("how many days are in a leap year", "366");
+        result.put("how many months have 28 days", "All 12 months have at least 28 days");
+        result.put("what is the nearest star to earth", "The Sun");
+        result.put("what is the natural satellite of earth", "The Moon");
+        result.put("what is earth natural satellite", "The Moon");
+
+        // Common internet and pop-culture trivia.
+        result.put("who sings never gonna give you up", "Rick Astley");
+        result.put("who sang never gonna give you up", "Rick Astley");
+        result.put("what is a rickroll", "A prank that tricks someone into opening Rick Astley's Never Gonna Give You Up music video");
+        result.put("what does lol stand for", "Laughing out loud");
+        result.put("what does brb stand for", "Be right back");
+        result.put("what does idk stand for", "I don't know");
+        result.put("what does tbh stand for", "To be honest");
+        result.put("what does afk stand for", "Away from keyboard");
+        result.put("what does sus mean", "Suspicious");
+        result.put("what does 404 mean", "Not Found; it is a common HTTP status code");
+        result.put("what is the meaning of 404", "Not Found; it is a common HTTP status code");
+        result.put("what does gg mean", "Good game");
+        result.put("what does npc mean", "Non-player character");
+        result.put("what does bruh mean", "An informal expression of disbelief, frustration, or surprise");
+
         return result;
     }
 
