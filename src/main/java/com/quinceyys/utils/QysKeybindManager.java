@@ -59,7 +59,7 @@ public final class QysKeybindManager {
         ClientTickEvents.END_CLIENT_TICK.register(QysKeybindManager::onEndTick);
     }
 
-    private static KeyMapping create(String translationKey, InputConstants.Key defaultKey) {
+    private static KeyMapping create(String translationKey, int defaultKey) {
         return KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 translationKey, defaultKey, KeyMapping.Category.MISC
         ));
@@ -121,7 +121,7 @@ public final class QysKeybindManager {
     public static String keyText(String id) {
         KeyMapping mapping = BINDINGS.get(id);
         if (mapping == null) return "UNAVAILABLE";
-        String name = mapping.getKey().getName();
+        String name = mapping.saveString();
         if (name.startsWith("key.keyboard.")) return name.substring("key.keyboard.".length()).toUpperCase();
         if (name.startsWith("key.mouse.")) return "MOUSE " + name.substring("key.mouse.".length());
         if (name.equals("key.keyboard.unknown")) return "UNBOUND";
@@ -132,7 +132,7 @@ public final class QysKeybindManager {
         KeyMapping current = BINDINGS.get(id);
         if (current == null) return "";
         for (Map.Entry<String, KeyMapping> entry : BINDINGS.entrySet()) {
-            if (!entry.getKey().equals(id) && current.getKey().equals(entry.getValue().getKey())) {
+            if (!entry.getKey().equals(id) && current.saveString().equals(entry.getValue().saveString())) {
                 return "  ! DUPLICATE";
             }
         }
@@ -148,18 +148,18 @@ public final class QysKeybindManager {
     }
 
     public static void resetDefaults() {
-        setKey("open_gui", InputConstants.KEY_O);
-        setKey("autototem_toggle", InputConstants.KEY_T);
-        setKey("mace_toggle", InputConstants.KEY_R);
-        setKey("mace_slam", InputConstants.KEY_G);
-        setKey("aim_toggle", InputConstants.KEY_K);
-        setKey("trigger_toggle", InputConstants.KEY_L);
-        setKey("crystal_toggle", InputConstants.KEY_J);
-        setKey("anchor_toggle", InputConstants.KEY_H);
-        setKey("sprint_toggle", InputConstants.KEY_P);
-        setKey("chat_toggle", InputConstants.KEY_U);
-        setKey("tnt_toggle", InputConstants.KEY_I);
-        setKey("tnt_activate", InputConstants.KEY_Y);
+        setKey("open_gui", InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_O));
+        setKey("autototem_toggle", InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_T));
+        setKey("mace_toggle", InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_R));
+        setKey("mace_slam", InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_G));
+        setKey("aim_toggle", InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_K));
+        setKey("trigger_toggle", InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_L));
+        setKey("crystal_toggle", InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_J));
+        setKey("anchor_toggle", InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_H));
+        setKey("sprint_toggle", InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_P));
+        setKey("chat_toggle", InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_U));
+        setKey("tnt_toggle", InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_I));
+        setKey("tnt_activate", InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_Y));
         save();
     }
 
@@ -192,7 +192,7 @@ public final class QysKeybindManager {
     public static void save() {
         Properties properties = new Properties();
         for (Map.Entry<String, KeyMapping> entry : BINDINGS.entrySet()) {
-            properties.setProperty(entry.getKey(), entry.getValue().getKey().getName());
+            properties.setProperty(entry.getKey(), entry.getValue().saveString());
         }
         try {
             Files.createDirectories(CONFIG.getParent());
