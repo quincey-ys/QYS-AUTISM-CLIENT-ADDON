@@ -1,5 +1,6 @@
 package com.quinceyys.utils;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractSliderButton;
@@ -41,23 +42,26 @@ public final class QysUtilsConfigScreen extends Screen {
         panelX = (this.width - panelWidth) / 2;
         panelY = (this.height - panelHeight) / 2;
 
-        int tabWidth = Math.min(164, (panelWidth - 32) / 3);
+        int tabWidth = Math.min(130, (panelWidth - 32) / 4);
         int tabStartX = panelX + 10;
+        int tabGap = 4;
         int firstTabY = panelY + 30;
         int secondTabY = panelY + 52;
 
         addTab("AUTO TOTEM", 0, tabStartX, firstTabY, tabWidth);
-        addTab("MACE HITTER", 1, tabStartX + tabWidth + 4, firstTabY, tabWidth);
-        addTab("COMBAT", 2, tabStartX + (tabWidth + 4) * 2, firstTabY, tabWidth);
-        addTab("CRYSTAL / ANCHOR", 3, tabStartX, secondTabY, tabWidth);
-        addTab("MOVEMENT", 4, tabStartX + tabWidth + 4, secondTabY, tabWidth);
-        addTab("CHAT GAMES", 5, tabStartX + (tabWidth + 4) * 2, secondTabY, tabWidth);
+        addTab("MACE HITTER", 1, tabStartX + tabWidth + tabGap, firstTabY, tabWidth);
+        addTab("COMBAT", 2, tabStartX + (tabWidth + tabGap) * 2, firstTabY, tabWidth);
+        addTab("CRYSTAL / ANCHOR", 3, tabStartX + (tabWidth + tabGap) * 3, firstTabY, tabWidth);
+        addTab("MOVEMENT", 4, tabStartX, secondTabY, tabWidth);
+        addTab("CHAT GAMES", 5, tabStartX + tabWidth + tabGap, secondTabY, tabWidth);
+        addTab("TNT CART", 6, tabStartX + (tabWidth + tabGap) * 2, secondTabY, tabWidth);
+        addTab("KEYBINDS", 7, tabStartX + (tabWidth + tabGap) * 3, secondTabY, tabWidth);
 
         int leftX = panelX + 14;
         int rightX = panelX + panelWidth / 2 + 4;
         int colWidth = panelWidth / 2 - 22;
         int contentTop = contentTop();
-        int startY = contentTop + (selectedTab == 2 ? 18 : 2);
+        int startY = contentTop + (selectedTab == 2 ? 18 : selectedTab == 7 ? 28 : 2);
         int y;
 
         if (selectedTab == 0) {
@@ -208,7 +212,7 @@ public final class QysUtilsConfigScreen extends Screen {
             addToggle(leftX, y, colWidth, "Pause While Using Items",
                     () -> AutoSprintModule.pauseWhileUsingItems,
                     v -> AutoSprintModule.pauseWhileUsingItems = v);
-        } else {
+        } else if (selectedTab == 5) {
             y = startY;
             addToggle(leftX, y, colWidth, "Chat Game Guesser",
                     () -> ChatGameGuesserModule.enabled,
@@ -247,8 +251,44 @@ public final class QysUtilsConfigScreen extends Screen {
                     v -> ChatGameGuesserModule.minimumSendIntervalMs = (int) Math.round(v));
         }
 
+        } else if (selectedTab == 6) {
+            y = startY;
+            addToggle(leftX, y, colWidth, "Auto TNT Cart Enabled",
+                    () -> AutoTntCartModule.enabled, AutoTntCartModule::setEnabled); y += ROW_HEIGHT;
+            addTntModeButton(leftX, y, colWidth);
+
+            y = startY;
+            addSlider(rightX, y, colWidth, "Rail to Cart Delay (ms)", 0, 2000, 25,
+                    () -> AutoTntCartModule.railToCartDelayMs,
+                    v -> AutoTntCartModule.railToCartDelayMs = (int) Math.round(v)); y += ROW_HEIGHT;
+            addSlider(rightX, y, colWidth, "Cart to Bow Delay (ms)", 0, 2000, 25,
+                    () -> AutoTntCartModule.cartToBowDelayMs,
+                    v -> AutoTntCartModule.cartToBowDelayMs = (int) Math.round(v)); y += ROW_HEIGHT;
+            addSlider(rightX, y, colWidth, "Bow Charge (ms)", 200, 2000, 25,
+                    () -> AutoTntCartModule.bowChargeMs,
+                    v -> AutoTntCartModule.bowChargeMs = (int) Math.round(v)); y += ROW_HEIGHT;
+            addSlider(rightX, y, colWidth, "Repeat Cooldown (ms)", 0, 10000, 100,
+                    () -> AutoTntCartModule.repeatCooldownMs,
+                    v -> AutoTntCartModule.repeatCooldownMs = (int) Math.round(v));
+        } else if (selectedTab == 7) {
+            java.util.List<String> ids = QysKeybindManager.ids();
+            for (int i = 0; i < ids.size(); i++) {
+                String id = ids.get(i);
+                int row = i % 6;
+                int x = i < 6 ? leftX : rightX;
+                addKeybindButton(x, startY + row * ROW_HEIGHT, colWidth, id);
+            }
+        }
+
         addButton(panelX + panelWidth / 2 - 96, panelY + panelHeight - 31, 192,
                 "DONE  •  SAVE SETTINGS", b -> onClose());
+        if (selectedTab == 7) {
+            addButton(panelX + panelWidth - 146, panelY + panelHeight - 31, 132,
+                    "RESET DEFAULTS", b -> {
+                        QysKeybindManager.resetDefaults();
+                        rebuildWidgets();
+                    });
+        }
     }
 
     private void addTab(String label, int tab, int x, int y, int width) {
@@ -306,6 +346,53 @@ public final class QysUtilsConfigScreen extends Screen {
         addRenderableWidget(button);
     }
 
+    private void addTntModeButton(int x, int y, int width) {
+        Button button = Button.builder(Component.literal("Mode: " + AutoTntCartModule.mode), b -> {
+            AutoTntCartModule.cycleMode();
+            b.setMessage(Component.literal("Mode: " + AutoTntCartModule.mode));
+        }).bounds(x, displayY(y), width, 20).build();
+        button.visible = rowVisible(y);
+        addRenderableWidget(button);
+    }
+
+    private void addKeybindButton(int x, int y, int width, String id) {
+        String label = QysKeybindManager.label(id);
+        String message = label + ": " + QysKeybindManager.keyText(id) + QysKeybindManager.conflictText(id);
+        Button button = Button.builder(Component.literal(fit(message, 42)), b -> {
+            capturingKeybind = id;
+            b.setMessage(Component.literal(fit("PRESS KEY / MOUSE  •  ESC = CLEAR", 42)));
+        }).bounds(x, displayY(y), width, 19).build();
+        button.visible = rowVisible(y);
+        addRenderableWidget(button);
+    }
+
+    private String capturingKeybind;
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (capturingKeybind != null) {
+            InputConstants.Key key = keyCode == 256
+                    ? InputConstants.Type.KEYSYM.getOrCreate(-1)
+                    : InputConstants.getKey(keyCode, scanCode);
+            QysKeybindManager.setKey(capturingKeybind, key);
+            capturingKeybind = null;
+            rebuildWidgets();
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (capturingKeybind != null) {
+            QysKeybindManager.setKey(capturingKeybind, InputConstants.Type.MOUSE.getOrCreate(button));
+            capturingKeybind = null;
+            rebuildWidgets();
+            return true;
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
     private int displayY(int y) {
         return y - scrollOffset * ROW_HEIGHT;
     }
@@ -319,7 +406,7 @@ public final class QysUtilsConfigScreen extends Screen {
     }
 
     private int rowsTop() {
-        return contentTop() + (selectedTab == 2 ? 18 : 2);
+        return contentTop() + (selectedTab == 2 ? 18 : selectedTab == 7 ? 28 : 2);
     }
 
     private boolean rowVisible(int y) {
@@ -335,6 +422,8 @@ public final class QysUtilsConfigScreen extends Screen {
             case 3 -> 7;
             case 4 -> 2;
             case 5 -> 9;
+            case 6 -> 4;
+            case 7 -> 6;
             default -> 1;
         };
     }
@@ -454,6 +543,8 @@ public final class QysUtilsConfigScreen extends Screen {
             case 3 -> "CRYSTAL / ANCHOR CONFIGURATION";
             case 4 -> "MOVEMENT CONFIGURATION";
             case 5 -> "CHAT GAME GUESSER";
+            case 6 -> "AUTO TNT CART CONFIGURATION";
+            case 7 -> "EDITABLE KEYBOARD / MOUSE BINDS";
             default -> "AUTOTOTEM CONFIGURATION";
         };
         graphics.text(this.font, title, panelX + 16, panelY + 82, 0xFFE4EAF5, false);
@@ -484,6 +575,22 @@ public final class QysUtilsConfigScreen extends Screen {
                     contentTop() + 46, 0xFFD5DCEC, false);
             graphics.text(this.font, "Auto Send is off by default.", panelX + panelWidth / 2 + 18,
                     contentTop() + 66, 0xFFD5DCEC, false);
+        } else if (selectedTab == 6) {
+            graphics.text(this.font, "RAIL PLACEMENT TRIGGER", panelX + 18,
+                    contentTop() + 12, 0xFFE4EAF5, true);
+            graphics.text(this.font, "Handles vanilla and modded rail blocks.", panelX + 18,
+                    contentTop() + 32, 0xFFD5DCEC, false);
+            graphics.text(this.font, "Requires a TNT Minecart and a Bow.", panelX + 18,
+                    contentTop() + 46, 0xFFD5DCEC, false);
+            graphics.text(this.font, "Manual Assist leaves the bow selected.", panelX + 18,
+                    contentTop() + 66, 0xFFD5DCEC, false);
+            graphics.text(this.font, "TIMING", panelX + panelWidth / 2 + 12,
+                    contentTop() + 12, 0xFFE4EAF5, true);
+        } else if (selectedTab == 7) {
+            graphics.text(this.font, capturingKeybind == null
+                            ? "Click a binding, then press a keyboard key or mouse button. ESC clears it."
+                            : "Waiting for input: " + QysKeybindManager.label(capturingKeybind),
+                    panelX + 18, contentTop() + 8, 0xFFD5DCEC, false);
         }
 
         if (maxScroll() > 0) {
