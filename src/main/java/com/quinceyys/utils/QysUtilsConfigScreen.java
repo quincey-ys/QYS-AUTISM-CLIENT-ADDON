@@ -338,7 +338,7 @@ public final class QysUtilsConfigScreen extends Screen {
 
     private void addModeButton(int x, int y, int width) {
         int displayY = displayY(y);
-        Button button = Button.builder(modeText(), b -> {
+        Button button = Button.builder(modeText(width - 14), b -> {
             String[] modes = {"Smart", "Switch", "PickUp"};
             int index = 0;
             for (int i = 0; i < modes.length; i++) {
