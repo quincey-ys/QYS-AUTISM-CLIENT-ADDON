@@ -3,7 +3,7 @@
   "id": "qys_utils",
   "version": "${version}",
   "name": "QYS-UTILS",
-  "description": "Standalone Fabric client utilities: AutoTotem, Mace Hitter, Combat Assist, Auto Sprint, Crystal/Anchor tools, and Chat Game Guesser.",
+  "description": "Standalone Fabric client utilities: AutoTotem, Mace Hitter, Combat Assist, Auto Sprint, Crystal/Anchor tools, Chat Game Guesser, and Auto TNT Cart.",
   "authors": ["quincey-ys"],
   "environment": "client",
   "entrypoints": {
