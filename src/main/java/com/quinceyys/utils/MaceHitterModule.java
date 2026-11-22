@@ -42,6 +42,9 @@ public final class MaceHitterModule {
     private static int delayCounter;
     private static Entity currentTarget;
     private static boolean jumpHeldByMod;
+    private static int previousHotbarSlot = -1;
+    private static int autoSelectedMaceSlot = -1;
+    private static boolean autoSwapPausedByUser;
 
     private MaceHitterModule() {}
 
@@ -68,6 +71,10 @@ public final class MaceHitterModule {
             while (toggleKey.consumeClick()) { }
             while (slamKey.consumeClick()) { }
             releaseJump(client);
+            if (client.player != null) {
+                restoreAutoSwap(client.player);
+                autoSwapPausedByUser = true;
+            }
             return;
         }
 
@@ -76,6 +83,8 @@ public final class MaceHitterModule {
             saveConfig();
             if (!enabled) {
                 releaseJump(client);
+                restoreAutoSwap(client.player);
+                autoSwapPausedByUser = false;
                 currentTarget = null;
             }
         }
@@ -84,6 +93,8 @@ public final class MaceHitterModule {
 
         LocalPlayer player = client.player;
         if (!enabled || player == null || client.level == null || client.gameMode == null || !player.isAlive()) {
+            if (player != null) restoreAutoSwap(player);
+            autoSwapPausedByUser = false;
             if (player == null || client.level == null) releaseJump(client);
             return;
         }
@@ -91,6 +102,8 @@ public final class MaceHitterModule {
         currentTarget = findTarget(client, player);
         if (currentTarget == null) {
             releaseJump(client);
+            restoreAutoSwap(player);
+            autoSwapPausedByUser = false;
             delayCounter = 0;
             return;
         }
@@ -144,16 +157,38 @@ public final class MaceHitterModule {
 
     private static boolean ensureMace(LocalPlayer player) {
         if (player.getMainHandItem().getItem() instanceof MaceItem) return true;
-        if (!autoSwap) return false;
+        if (!autoSwap || autoSwapPausedByUser) return false;
+
+        int selectedSlot = player.getInventory().getSelectedSlot();
+        if (autoSelectedMaceSlot >= 0 && selectedSlot != autoSelectedMaceSlot) {
+            // The user manually changed hotbar slots. Respect that choice until the target leaves range.
+            previousHotbarSlot = -1;
+            autoSelectedMaceSlot = -1;
+            autoSwapPausedByUser = true;
+            return false;
+        }
 
         for (int slot = 0; slot < 9; slot++) {
             ItemStack stack = player.getInventory().getItem(slot);
             if (stack.getItem() instanceof MaceItem) {
+                if (autoSelectedMaceSlot < 0) {
+                    previousHotbarSlot = selectedSlot;
+                    autoSelectedMaceSlot = slot;
+                }
                 player.getInventory().setSelectedSlot(slot);
                 return true;
             }
         }
         return false;
+    }
+
+    private static void restoreAutoSwap(LocalPlayer player) {
+        if (previousHotbarSlot >= 0 && autoSelectedMaceSlot >= 0
+                && player.getInventory().getSelectedSlot() == autoSelectedMaceSlot) {
+            player.getInventory().setSelectedSlot(previousHotbarSlot);
+        }
+        previousHotbarSlot = -1;
+        autoSelectedMaceSlot = -1;
     }
 
     private static boolean isBlocking(Entity target) {
