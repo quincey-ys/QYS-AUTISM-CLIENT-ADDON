@@ -63,6 +63,14 @@ public final class MaceHitterModule {
     }
 
     private static void onEndTick(Minecraft client) {
+        // Never let a queued combat keypress fire after the user opens a menu or chat.
+        if (client.gui.screen() != null) {
+            while (toggleKey.consumeClick()) { }
+            while (slamKey.consumeClick()) { }
+            releaseJump(client);
+            return;
+        }
+
         while (toggleKey.consumeClick()) {
             enabled = !enabled;
             saveConfig();
