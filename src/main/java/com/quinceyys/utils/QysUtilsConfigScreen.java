@@ -576,23 +576,27 @@ public final class QysUtilsConfigScreen extends Screen {
             graphics.text(this.font, "OWN-PLACED ANCHORS", panelX + panelWidth / 2 + 12,
                     panelY + 100, 0xFFE4EAF5, true);
         } else if (selectedTab == 4) {
-            graphics.text(this.font, "AUTOMATIC SPRINT", panelX + panelWidth / 2 + 18,
+            int rightTextX = panelX + panelWidth / 2 + 18;
+            int rightTextWidth = Math.max(1, panelWidth / 2 - 36);
+            graphics.text(this.font, "AUTOMATIC SPRINT", rightTextX,
                     contentTop() + 12, 0xFFE4EAF5, true);
-            graphics.text(this.font, "Sprints while moving forward.", panelX + panelWidth / 2 + 18,
-                    contentTop() + 32, 0xFFD5DCEC, false);
-            graphics.text(this.font, "Pauses while sneaking, in menus,", panelX + panelWidth / 2 + 18,
-                    contentTop() + 46, 0xFFD5DCEC, false);
-            graphics.text(this.font, "or using items when selected.", panelX + panelWidth / 2 + 18,
-                    contentTop() + 60, 0xFFD5DCEC, false);
+            int infoY = contentTop() + 32;
+            infoY = drawWrappedText(graphics, "Sprints while moving forward.",
+                    rightTextX, infoY, rightTextWidth, 0xFFD5DCEC);
+            infoY += 4;
+            drawWrappedText(graphics, "Pauses while sneaking, in menus, or using items when selected.",
+                    rightTextX, infoY, rightTextWidth, 0xFFD5DCEC);
         } else if (selectedTab == 5) {
-            graphics.text(this.font, "SUPPORTED PROMPTS", panelX + panelWidth / 2 + 18,
+            int rightTextX = panelX + panelWidth / 2 + 18;
+            int rightTextWidth = Math.max(1, panelWidth / 2 - 36);
+            graphics.text(this.font, "SUPPORTED PROMPTS", rightTextX,
                     contentTop() + 66, 0xFFE4EAF5, true);
-            graphics.text(this.font, "Math, word scrambles, reverse text,", panelX + panelWidth / 2 + 18,
-                    contentTop() + 84, 0xFFD5DCEC, false);
-            graphics.text(this.font, "typing prompts and built-in trivia.", panelX + panelWidth / 2 + 18,
-                    contentTop() + 98, 0xFFD5DCEC, false);
-            graphics.text(this.font, "Auto Send is off by default.", panelX + panelWidth / 2 + 18,
-                    contentTop() + 116, 0xFFD5DCEC, false);
+            int infoY = contentTop() + 84;
+            infoY = drawWrappedText(graphics, "Math, word scrambles, reverse text, typing prompts and built-in trivia.",
+                    rightTextX, infoY, rightTextWidth, 0xFFD5DCEC);
+            infoY += 4;
+            drawWrappedText(graphics, "Auto Send is off by default.",
+                    rightTextX, infoY, rightTextWidth, 0xFFD5DCEC);
         } else if (selectedTab == 6) {
             int infoY = contentTop() + 18;
             int infoWidth = panelWidth - 36;
