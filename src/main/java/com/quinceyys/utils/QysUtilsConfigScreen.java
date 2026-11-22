@@ -538,16 +538,21 @@ public final class QysUtilsConfigScreen extends Screen {
 
         int contentY = contentTop();
         int contentHeight = contentBottom() - contentY;
-        int half = panelWidth / 2 - 18;
-        fillSquircle(graphics, panelX + 9, contentY, half, contentHeight, 10, 0xFF1C2431);
-        fillSquircle(graphics, panelX + panelWidth / 2 + 6, contentY, half, contentHeight, 10, 0xFF1C2431);
+        if (selectedTab == 6) {
+            fillSquircle(graphics, panelX + 9, contentY, panelWidth - 18,
+                    contentHeight, 10, 0xFF1C2431);
+        } else {
+            int half = panelWidth / 2 - 18;
+            fillSquircle(graphics, panelX + 9, contentY, half, contentHeight, 10, 0xFF1C2431);
+            fillSquircle(graphics, panelX + panelWidth / 2 + 6, contentY, half, contentHeight, 10, 0xFF1C2431);
+        }
     }
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         super.extractRenderState(graphics, mouseX, mouseY, a);
         graphics.text(this.font, "QYS-UTILS", panelX + 16, panelY + 8, 0xFFFFFFFF, true);
-        graphics.text(this.font, "UNIFIED CLIENT UTILITIES  /  26.3",
+        graphics.text(this.font, fit("UNIFIED CLIENT UTILITIES  /  26.3", panelWidth - 136),
                 panelX + 116, panelY + 8, 0xFFD5DCEC, false);
 
         String title = switch (selectedTab) {
@@ -589,23 +594,29 @@ public final class QysUtilsConfigScreen extends Screen {
             graphics.text(this.font, "Auto Send is off by default.", panelX + panelWidth / 2 + 18,
                     contentTop() + 116, 0xFFD5DCEC, false);
         } else if (selectedTab == 6) {
-            graphics.text(this.font, "ORIGINAL AUTOTNTCART IS BUNDLED AS A SEPARATE FABRIC MOD",
-                    panelX + 18, contentTop() + 18, 0xFFE4EAF5, true);
-            graphics.text(this.font, "Open Mods > AutoTntCart > Configure to change its settings.",
-                    panelX + 18, contentTop() + 44, 0xFFD5DCEC, false);
-            graphics.text(this.font, "Included modes: Burst, Place, Chain and Detonate.",
-                    panelX + 18, contentTop() + 66, 0xFFD5DCEC, false);
-            graphics.text(this.font, "Default keys: C = trigger, V = cycle mode.",
-                    panelX + 18, contentTop() + 88, 0xFFD5DCEC, false);
-            graphics.text(this.font, "A compatible server-side AutoTntCart receiver is required.",
-                    panelX + 18, contentTop() + 110, 0xFFFFD19A, false);
-            graphics.text(this.font, "The reduced legacy QYS cart helper was removed to prevent duplicate controls.",
-                    panelX + 18, contentTop() + 132, 0xFF9EADBF, false);
+            int infoY = contentTop() + 18;
+            int infoWidth = panelWidth - 36;
+            infoY = drawWrappedText(graphics,
+                    "Original AutoTntCart 2.0.1+26.3 is bundled with all four modes: Burst, Place, Chain and Detonate.",
+                    panelX + 18, infoY, infoWidth, 0xFFE4EAF5);
+            infoY += 8;
+            infoY = drawWrappedText(graphics,
+                    "Configure it in Mods > AutoTntCart > Configure (Cloth Config).",
+                    panelX + 18, infoY, infoWidth, 0xFFD5DCEC);
+            infoY += 6;
+            infoY = drawWrappedText(graphics,
+                    "Default keys: C triggers; V cycles modes. Change them in Minecraft Controls.",
+                    panelX + 18, infoY, infoWidth, 0xFFD5DCEC);
+            infoY += 6;
+            drawWrappedText(graphics,
+                    "A compatible server-side AutoTntCart receiver is required.",
+                    panelX + 18, infoY, infoWidth, 0xFFFFD19A);
         } else if (selectedTab == 7) {
-            graphics.text(this.font, capturingKeybind == null
-                            ? "Click a binding, then press a keyboard key or mouse button. ESC clears it."
-                            : "Waiting for input: " + QysKeybindManager.label(capturingKeybind),
-                    panelX + 18, contentTop() + 8, 0xFFD5DCEC, false);
+            String hint = capturingKeybind == null
+                    ? "Click a binding, then press a keyboard key or mouse button. ESC clears it."
+                    : "Waiting for input: " + QysKeybindManager.label(capturingKeybind);
+            drawWrappedText(graphics, hint, panelX + 18, contentTop() + 8,
+                    panelWidth - 36, 0xFFD5DCEC);
         }
 
         if (maxScroll() > 0) {
@@ -618,6 +629,28 @@ public final class QysUtilsConfigScreen extends Screen {
             int thumbY = trackTop + (trackHeight - thumbHeight) * scrollOffset / maxScroll();
             graphics.fill(trackX, thumbY, trackX + 3, thumbY + thumbHeight, 0xFFB5C4DA);
         }
+    }
+
+    private int drawWrappedText(GuiGraphicsExtractor graphics, String text, int x, int y,
+                                int maxWidth, int color) {
+        StringBuilder line = new StringBuilder();
+        for (String word : text.split("\\s+")) {
+            String candidate = line.isEmpty() ? word : line + " " + word;
+            if (!line.isEmpty() && this.font.width(candidate) > maxWidth) {
+                graphics.text(this.font, line.toString(), x, y, color, false);
+                y += 12;
+                line.setLength(0);
+                line.append(word);
+            } else {
+                if (!line.isEmpty()) line.append(' ');
+                line.append(word);
+            }
+        }
+        if (!line.isEmpty()) {
+            graphics.text(this.font, line.toString(), x, y, color, false);
+            y += 12;
+        }
+        return y;
     }
 
     private void fillSquircle(GuiGraphicsExtractor graphics, int x, int y, int width, int height,
