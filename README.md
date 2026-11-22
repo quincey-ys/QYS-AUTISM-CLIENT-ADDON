@@ -42,7 +42,7 @@ All keybinds can be changed under Options > Controls > Key Binds.
 ## Configuration files
 - config/autism-autototem.properties
 - config/qys-mace-hitter.properties
-- config/qys-auto-place-combat.properties
+- config/qys-auto-place-combat.properties (Crystal and Anchor delays/rate limits)
 
 The AutoTotem config filename and property names are kept compatible with the original QYS AutoTotem config.
 
