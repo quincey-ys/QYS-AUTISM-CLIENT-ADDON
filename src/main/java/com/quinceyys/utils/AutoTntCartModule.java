@@ -484,7 +484,7 @@ public final class AutoTntCartModule {
         }
 
         if (client.player != null && text != null && !text.isBlank()) {
-            client.player.displayClientMessage(Component.literal(text), true);
+            client.player.sendOverlayMessage(Component.literal(text));
         }
         resetActionState();
     }
@@ -508,7 +508,7 @@ public final class AutoTntCartModule {
     }
 
     private static void message(Minecraft client, String text) {
-        if (client.player != null) client.player.displayClientMessage(Component.literal(text), true);
+        if (client.player != null) client.player.sendOverlayMessage(Component.literal(text));
     }
 
     public static void cycleMode() {
