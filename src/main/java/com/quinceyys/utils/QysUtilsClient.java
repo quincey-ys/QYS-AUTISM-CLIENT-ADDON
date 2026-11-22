@@ -8,6 +8,7 @@ public final class QysUtilsClient implements ClientModInitializer {
         AutoTotemModule.initialize();
         MaceHitterModule.initialize();
         AutoPlaceCombatModule.initialize();
-        System.out.println("[QYS-UTILS] AutoTotem, Mace Hitter, and Crystal/Anchor utilities initialized.");
+        AutoSprintModule.initialize();
+        System.out.println("[QYS-UTILS] AutoTotem, Mace Hitter, Crystal/Anchor, and Auto Sprint initialized.");
     }
 }
