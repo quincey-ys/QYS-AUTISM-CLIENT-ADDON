@@ -233,7 +233,10 @@ public final class QysUtilsConfigScreen extends Screen {
                     v -> ChatGameGuesserModule.solveTyping = v); y += ROW_HEIGHT;
             addToggle(leftX, y, colWidth, "Solve Trivia",
                     () -> ChatGameGuesserModule.solveTrivia,
-                    v -> ChatGameGuesserModule.solveTrivia = v);
+                    v -> ChatGameGuesserModule.solveTrivia = v); y += ROW_HEIGHT;
+            addToggle(leftX, y, colWidth, "Solve Number Guess",
+                    () -> ChatGameGuesserModule.solveNumberGuess,
+                    v -> ChatGameGuesserModule.solveNumberGuess = v);
 
             y = startY;
             addSlider(rightX, y, colWidth, "Answer Delay (ms)", 0, 5000, 50,
@@ -281,7 +284,7 @@ public final class QysUtilsConfigScreen extends Screen {
         int displayY = displayY(y);
         ConfigSlider slider = new ConfigSlider(
                 x, displayY, width, 19, label, min, max, step, getter.getAsDouble(),
-                setter, this::persist
+                setter, QysUtilsConfigScreen::persist
         );
         slider.visible = rowVisible(y);
         addRenderableWidget(slider);
@@ -331,7 +334,7 @@ public final class QysUtilsConfigScreen extends Screen {
             case 2 -> 10;
             case 3 -> 7;
             case 4 -> 2;
-            case 5 -> 8;
+            case 5 -> 9;
             default -> 1;
         };
     }
