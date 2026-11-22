@@ -45,6 +45,7 @@ public final class CombatAssistModule {
     public static int triggerDelayTicks = 2;
 
     private static long lastTriggerTick = Long.MIN_VALUE;
+    private static Object trackedLevel;
 
     private CombatAssistModule() {}
 
@@ -54,6 +55,10 @@ public final class CombatAssistModule {
     }
 
     private static void onEndTick(Minecraft client) {
+        if (client.level != trackedLevel) {
+            trackedLevel = client.level;
+            lastTriggerTick = Long.MIN_VALUE;
+        }
         LocalPlayer player = client.player;
         if (player == null || client.level == null || client.gameMode == null
                 || !player.isAlive() || client.gui.screen() != null) {
