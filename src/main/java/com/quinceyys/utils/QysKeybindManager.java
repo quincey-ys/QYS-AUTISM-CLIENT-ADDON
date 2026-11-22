@@ -68,6 +68,15 @@ public final class QysKeybindManager {
     private static final Map<String, String> LABELS = new LinkedHashMap<>();
 
     private static void onEndTick(Minecraft client) {
+        if (client.gui.screen() != null) {
+            // Do not toggle modules while the user is typing or interacting with a screen.
+            // Drain queued presses so they cannot fire after the screen closes.
+            for (KeyMapping mapping : BINDINGS.values()) {
+                while (mapping.consumeClick()) { }
+            }
+            return;
+        }
+
         if (aimToggle.consumeClick()) {
             CombatAssistModule.aimAssistEnabled = !CombatAssistModule.aimAssistEnabled;
             CombatAssistModule.saveConfig();
