@@ -638,7 +638,6 @@ public final class QysUtilsConfigScreen extends Screen {
     @Override
     public void onClose() {
         if (configDirty) persist();
-        else persist();
         Minecraft.getInstance().gui.setScreen(parent);
     }
 }
