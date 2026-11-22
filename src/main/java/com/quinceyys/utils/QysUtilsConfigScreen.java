@@ -39,8 +39,8 @@ public final class QysUtilsConfigScreen extends Screen {
 
     @Override
     protected void init() {
-        panelWidth = Math.min(560, this.width - 16);
-        panelHeight = Math.min(382, this.height - 16);
+        panelWidth = Math.max(1, Math.min(560, this.width - 16));
+        panelHeight = Math.max(1, Math.min(382, this.height - 16));
         panelX = (this.width - panelWidth) / 2;
         panelY = (this.height - panelHeight) / 2;
 
@@ -257,7 +257,7 @@ public final class QysUtilsConfigScreen extends Screen {
                     () -> AutoTntCartModule.enabled, AutoTntCartModule::setEnabled); y += ROW_HEIGHT;
             addTntModeButton(leftX, y, colWidth);
 
-            y = startY;
+            y = startY + 22;
             addSlider(rightX, y, colWidth, "Rail to Cart Delay (ms)", 0, 2000, 25,
                     () -> AutoTntCartModule.railToCartDelayMs,
                     v -> AutoTntCartModule.railToCartDelayMs = (int) Math.round(v)); y += ROW_HEIGHT;
@@ -280,14 +280,20 @@ public final class QysUtilsConfigScreen extends Screen {
             }
         }
 
-        addButton(panelX + panelWidth / 2 - 96, panelY + panelHeight - 31, 192,
-                "DONE  •  SAVE SETTINGS", b -> onClose());
         if (selectedTab == 7) {
-            addButton(panelX + panelWidth - 146, panelY + panelHeight - 31, 132,
+            int footerY = panelY + panelHeight - 31;
+            int resetWidth = 132;
+            int doneX = panelX + 12;
+            int doneWidth = Math.max(1, panelWidth - 166);
+            addButton(doneX, footerY, doneWidth, "DONE  •  SAVE SETTINGS", b -> onClose());
+            addButton(panelX + panelWidth - resetWidth - 14, footerY, resetWidth,
                     "RESET DEFAULTS", b -> {
                         QysKeybindManager.resetDefaults();
                         rebuildWidgets();
                     });
+        } else {
+            addButton(panelX + panelWidth / 2 - 96, panelY + panelHeight - 31, 192,
+                    "DONE  •  SAVE SETTINGS", b -> onClose());
         }
     }
 
@@ -301,7 +307,7 @@ public final class QysUtilsConfigScreen extends Screen {
 
     private void addButton(int x, int y, int width, String label,
                            java.util.function.Consumer<Button> action) {
-        Button button = Button.builder(Component.literal(fit(label, 31)), b -> action.accept(b))
+        Button button = Button.builder(Component.literal(fit(label, width - 14)), b -> action.accept(b))
                 .bounds(x, y, width, 20).build();
         addRenderableWidget(button);
     }
@@ -309,10 +315,10 @@ public final class QysUtilsConfigScreen extends Screen {
     private void addToggle(int x, int y, int width, String label,
                            BooleanSupplier getter, Consumer<Boolean> setter) {
         int displayY = displayY(y);
-        Button button = Button.builder(toggleText(label, getter.getAsBoolean()), b -> {
+        Button button = Button.builder(toggleText(label, getter.getAsBoolean(), width - 14), b -> {
             boolean value = !getter.getAsBoolean();
             setter.accept(value);
-            b.setMessage(toggleText(label, value));
+            b.setMessage(toggleText(label, value, width - 14));
             persist();
         }).bounds(x, displayY, width, 19).build();
         button.visible = rowVisible(y);
@@ -324,7 +330,7 @@ public final class QysUtilsConfigScreen extends Screen {
         int displayY = displayY(y);
         ConfigSlider slider = new ConfigSlider(
                 x, displayY, width, 19, label, min, max, step, getter.getAsDouble(),
-                setter, QysUtilsConfigScreen::persist
+                setter, this::persist
         );
         slider.visible = rowVisible(y);
         addRenderableWidget(slider);
@@ -339,7 +345,7 @@ public final class QysUtilsConfigScreen extends Screen {
                 if (modes[i].equalsIgnoreCase(AutoTotemModule.switchMode)) index = i;
             }
             AutoTotemModule.switchMode = modes[(index + 1) % modes.length];
-            b.setMessage(modeText());
+            b.setMessage(modeText(width - 14));
             persist();
         }).bounds(x, displayY, width, 20).build();
         button.visible = rowVisible(y);
@@ -347,9 +353,9 @@ public final class QysUtilsConfigScreen extends Screen {
     }
 
     private void addTntModeButton(int x, int y, int width) {
-        Button button = Button.builder(Component.literal("Mode: " + AutoTntCartModule.mode), b -> {
+        Button button = Button.builder(Component.literal(fit("Mode: " + AutoTntCartModule.mode, width - 14)), b -> {
             AutoTntCartModule.cycleMode();
-            b.setMessage(Component.literal("Mode: " + AutoTntCartModule.mode));
+            b.setMessage(Component.literal(fit("Mode: " + AutoTntCartModule.mode, width - 14)));
         }).bounds(x, displayY(y), width, 20).build();
         button.visible = rowVisible(y);
         addRenderableWidget(button);
@@ -358,9 +364,9 @@ public final class QysUtilsConfigScreen extends Screen {
     private void addKeybindButton(int x, int y, int width, String id) {
         String label = QysKeybindManager.label(id);
         String message = label + ": " + QysKeybindManager.keyText(id) + QysKeybindManager.conflictText(id);
-        Button button = Button.builder(Component.literal(fit(message, 42)), b -> {
+        Button button = Button.builder(Component.literal(fit(message, width - 14)), b -> {
             capturingKeybind = id;
-            b.setMessage(Component.literal(fit("PRESS KEY / MOUSE  •  ESC = CLEAR", 42)));
+            b.setMessage(Component.literal(fit("PRESS KEY / MOUSE  •  ESC = CLEAR", width - 14)));
         }).bounds(x, displayY(y), width, 19).build();
         button.visible = rowVisible(y);
         addRenderableWidget(button);
@@ -420,11 +426,11 @@ public final class QysUtilsConfigScreen extends Screen {
             case 0 -> 8;
             case 1 -> 10;
             case 2 -> 10;
-            case 3 -> 7;
+            case 3 -> 6;
             case 4 -> 2;
             case 5 -> 9;
             case 6 -> 4;
-            case 7 -> 6;
+            case 7 -> (QysKeybindManager.ids().size() + 1) / 2;
             default -> 1;
         };
     }
@@ -452,28 +458,40 @@ public final class QysUtilsConfigScreen extends Screen {
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
-    private static Component toggleText(String label, boolean enabled) {
-        return Component.literal(fit(label + ": " + (enabled ? "ON" : "OFF"), 31));
+    private static Component toggleText(String label, boolean enabled, int maxWidth) {
+        return Component.literal(fit(label + ": " + (enabled ? "ON" : "OFF"), maxWidth));
     }
 
-    private static String fit(String text, int maxChars) {
-        if (text.length() <= maxChars) return text;
-        return text.substring(0, Math.max(1, maxChars - 1)) + "…";
+    /** Fits button labels using the actual Minecraft font width, not character counts. */
+    private static String fit(String text, int maxWidth) {
+        if (maxWidth <= 0) return "";
+        var font = Minecraft.getInstance().font;
+        if (font.width(text) <= maxWidth) return text;
+        String ellipsis = "…";
+        int end = text.length();
+        while (end > 0 && font.width(text.substring(0, end) + ellipsis) > maxWidth) {
+            end = text.offsetByCodePoints(end, -1);
+        }
+        return text.substring(0, end).stripTrailing() + ellipsis;
     }
 
-    private static Component modeText() {
-        return Component.literal("Switch Mode: " + AutoTotemModule.switchMode);
+    private static Component modeText(int maxWidth) {
+        return Component.literal(fit("Switch Mode: " + AutoTotemModule.switchMode, maxWidth));
     }
 
-    private static void persist() {
-        AutoTotemModule.saveConfig();
-        MaceHitterModule.saveConfig();
-        AutoPlaceCombatModule.saveConfig();
-        AutoSprintModule.saveConfig();
-        CombatAssistModule.saveConfig();
-        ChatGameGuesserModule.saveConfig();
-        AutoTntCartModule.saveConfig();
-        QysKeybindManager.save();
+    private void persist() {
+        // Slider drags can call this every frame. Save only the active tab's settings.
+        switch (selectedTab) {
+            case 0 -> AutoTotemModule.saveConfig();
+            case 1 -> MaceHitterModule.saveConfig();
+            case 2 -> CombatAssistModule.saveConfig();
+            case 3 -> AutoPlaceCombatModule.saveConfig();
+            case 4 -> AutoSprintModule.saveConfig();
+            case 5 -> ChatGameGuesserModule.saveConfig();
+            case 6 -> AutoTntCartModule.saveConfig();
+            case 7 -> QysKeybindManager.save();
+            default -> { }
+        }
     }
 
     private static final class ConfigSlider extends AbstractSliderButton {
@@ -483,6 +501,7 @@ public final class QysUtilsConfigScreen extends Screen {
         private final double step;
         private final DoubleConsumer setter;
         private final Runnable onChange;
+        private final int textWidth;
 
         private ConfigSlider(int x, int y, int width, int height, String label,
                              double minimum, double maximum, double step, double initial,
@@ -495,6 +514,7 @@ public final class QysUtilsConfigScreen extends Screen {
             this.step = step;
             this.setter = setter;
             this.onChange = onChange;
+            this.textWidth = Math.max(1, width - 14);
             updateMessage();
         }
 
@@ -505,7 +525,7 @@ public final class QysUtilsConfigScreen extends Screen {
             String formatted = step >= 1.0
                     ? String.format(java.util.Locale.ROOT, "%.0f", current)
                     : String.format(java.util.Locale.ROOT, "%.2f", current);
-            setMessage(Component.literal(fit(label + ": " + formatted, 31)));
+            setMessage(Component.literal(fit(label + ": " + formatted, textWidth)));
         }
 
         @Override
@@ -571,24 +591,24 @@ public final class QysUtilsConfigScreen extends Screen {
                     contentTop() + 60, 0xFFD5DCEC, false);
         } else if (selectedTab == 5) {
             graphics.text(this.font, "SUPPORTED PROMPTS", panelX + panelWidth / 2 + 18,
-                    contentTop() + 12, 0xFFE4EAF5, true);
+                    contentTop() + 66, 0xFFE4EAF5, true);
             graphics.text(this.font, "Math, word scrambles, reverse text,", panelX + panelWidth / 2 + 18,
-                    contentTop() + 32, 0xFFD5DCEC, false);
+                    contentTop() + 84, 0xFFD5DCEC, false);
             graphics.text(this.font, "typing prompts and built-in trivia.", panelX + panelWidth / 2 + 18,
-                    contentTop() + 46, 0xFFD5DCEC, false);
+                    contentTop() + 98, 0xFFD5DCEC, false);
             graphics.text(this.font, "Auto Send is off by default.", panelX + panelWidth / 2 + 18,
-                    contentTop() + 66, 0xFFD5DCEC, false);
+                    contentTop() + 116, 0xFFD5DCEC, false);
         } else if (selectedTab == 6) {
             graphics.text(this.font, "RAIL PLACEMENT TRIGGER", panelX + 18,
-                    contentTop() + 12, 0xFFE4EAF5, true);
+                    contentTop() + 60, 0xFFE4EAF5, true);
             graphics.text(this.font, "Handles vanilla and modded rail blocks.", panelX + 18,
-                    contentTop() + 32, 0xFFD5DCEC, false);
+                    contentTop() + 78, 0xFFD5DCEC, false);
             graphics.text(this.font, "Requires a TNT Minecart and a Bow.", panelX + 18,
-                    contentTop() + 46, 0xFFD5DCEC, false);
+                    contentTop() + 92, 0xFFD5DCEC, false);
             graphics.text(this.font, "Manual Assist leaves the bow selected.", panelX + 18,
-                    contentTop() + 66, 0xFFD5DCEC, false);
+                    contentTop() + 106, 0xFFD5DCEC, false);
             graphics.text(this.font, "TIMING", panelX + panelWidth / 2 + 12,
-                    contentTop() + 12, 0xFFE4EAF5, true);
+                    contentTop() + 5, 0xFFE4EAF5, true);
         } else if (selectedTab == 7) {
             graphics.text(this.font, capturingKeybind == null
                             ? "Click a binding, then press a keyboard key or mouse button. ESC clears it."
