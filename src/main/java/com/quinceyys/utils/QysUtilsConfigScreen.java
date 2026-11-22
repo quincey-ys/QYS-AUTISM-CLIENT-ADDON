@@ -2,6 +2,8 @@ package com.quinceyys.utils;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
@@ -249,8 +251,6 @@ public final class QysUtilsConfigScreen extends Screen {
             addSlider(rightX, y, colWidth, "Min Send Interval (ms)", 500, 10000, 100,
                     () -> ChatGameGuesserModule.minimumSendIntervalMs,
                     v -> ChatGameGuesserModule.minimumSendIntervalMs = (int) Math.round(v));
-        }
-
         } else if (selectedTab == 6) {
             y = startY;
             addToggle(leftX, y, colWidth, "Auto TNT Cart Enabled",
@@ -369,28 +369,29 @@ public final class QysUtilsConfigScreen extends Screen {
     private String capturingKeybind;
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
         if (capturingKeybind != null) {
-            InputConstants.Key key = keyCode == 256
-                    ? InputConstants.Type.KEYSYM.getOrCreate(-1)
-                    : InputConstants.getKey(keyCode, scanCode);
+            InputConstants.Key key = event.key() == InputConstants.KEY_ESCAPE
+                    ? InputConstants.Type.KEYBOARD.getOrCreate(-1)
+                    : InputConstants.Type.KEYBOARD.getOrCreate(event.key());
             QysKeybindManager.setKey(capturingKeybind, key);
             capturingKeybind = null;
             rebuildWidgets();
             return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         if (capturingKeybind != null) {
-            QysKeybindManager.setKey(capturingKeybind, InputConstants.Type.MOUSE.getOrCreate(button));
+            QysKeybindManager.setKey(capturingKeybind,
+                    InputConstants.Type.MOUSE.getOrCreate(event.input()));
             capturingKeybind = null;
             rebuildWidgets();
             return true;
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 
     private int displayY(int y) {
