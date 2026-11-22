@@ -39,6 +39,14 @@ Standalone Fabric client utility mod for Minecraft Java 26.3. This is one indepe
 - Suggestion-only mode displays the answer in the action bar; Auto Send is a separate setting and is off by default.
 - Disabled by default; settings are stored in config/qys-chat-game-guesser.properties.
 
+### Auto TNT Cart
+- Watches your own rail placement and supports vanilla and modded rail blocks through the shared rail-block base class.
+- Places a TNT Minecart on the detected rail, switches to a hotbar Bow, draws it for the configured charge duration, releases, and restores the original hotbar slot.
+- Single mode runs once and disarms; Repeat mode runs once for each new rail placement; Manual Assist places the cart and selects the Bow without firing.
+- Configurable rail-to-cart delay, cart-to-bow delay, bow charge duration, and repeat cooldown.
+- Requires a TNT Minecart and a Bow in the hotbar. A Flame-enchanted Bow is recommended for ignition.
+- Disabled by default. Server rules may prohibit automated item-use sequences; use only where permitted.
+
 ### Crystal / Anchor
 - Breaks only an End Crystal spawned at a block you just used with an End Crystal.
 - Uses a delayed queue for crystals you placed yourself and never rotates your view.
@@ -49,15 +57,12 @@ Standalone Fabric client utility mod for Minecraft Java 26.3. This is one indepe
 
 ## Shared settings screen
 
-Press O to open the unified QYS-UTILS settings screen. It has six tabs: AutoTotem, Mace Hitter, Combat, Crystal / Anchor, Movement, and Chat Games. The panel uses compact text, draggable slider controls, and per-tab scrolling. The screen uses a bundled anti-aliased Lato font so it does not depend on fonts installed on your computer. Changes save immediately and again when the screen closes. Crystal / Anchor settings are split into own-crystal and own-anchor columns; changes are saved to qys-auto-place-combat.properties.
+Press O to open the unified QYS-UTILS settings screen. It has eight tabs: AutoTotem, Mace Hitter, Combat, Crystal / Anchor, Movement, Chat Games, TNT Cart, and Keybinds. The panel uses compact text, draggable slider controls, and per-tab scrolling. The screen uses a bundled anti-aliased Lato font so it does not depend on fonts installed on your computer. Changes save immediately and again when the screen closes. Crystal / Anchor settings are split into own-crystal and own-anchor columns; changes are saved to qys-auto-place-combat.properties.
 
 ## Keybinds
-- T: Toggle AutoTotem
-- O: Open QYS-UTILS settings
-- R: Toggle Mace Hitter
-- G: Slam Now
+The KEYBINDS tab lets you reassign every QYS-UTILS module toggle and action using a keyboard key or mouse button. Mouse buttons 4 and 5 are supported. Click a binding, press the new key/button, or press Escape to clear it. Duplicate assignments are flagged, and bindings are saved in config/qys-utils-keybinds.properties.
 
-All keybinds can be changed under Options > Controls > Key Binds.
+Default bindings: O opens the menu; T toggles AutoTotem; R toggles Mace Hitter; G triggers Slam Now; K toggles Aim Assist; L toggles Trigger Bot; J toggles own-crystal breaking; H toggles the Anchor Combo; P toggles Auto Sprint; U toggles Chat Game Guesser; I toggles Auto TNT Cart; Y activates Auto TNT Cart on the targeted rail.
 
 ## Configuration files
 - config/autism-autototem.properties
@@ -66,6 +71,8 @@ All keybinds can be changed under Options > Controls > Key Binds.
 - config/qys-auto-sprint.properties (Auto Sprint settings)
 - config/qys-combat-assist.properties (Aim Assist and Trigger Bot settings)
 - config/qys-chat-game-guesser.properties (Chat Game Guesser settings)
+- config/qys-auto-tnt-cart.properties (Auto TNT Cart timing and mode)
+- config/qys-utils-keybinds.properties (all QYS-UTILS keyboard and mouse bindings)
 
 The AutoTotem config filename and property names are kept compatible with the original QYS AutoTotem config.
 
