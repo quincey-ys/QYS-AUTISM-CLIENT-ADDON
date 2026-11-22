@@ -131,9 +131,8 @@ public final class ChatGameGuesserModule {
         if (autoSend) {
             client.player.connection.sendChat(answer);
         } else {
-            client.player.displayClientMessage(
-                    Component.literal("[QYS Guess] " + answer + "  (Auto Send is OFF)"),
-                    true
+            client.player.sendOverlayMessage(
+                    Component.literal("[QYS Guess] " + answer + "  (Auto Send is OFF)")
             );
         }
     }
