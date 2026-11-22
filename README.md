@@ -56,12 +56,12 @@ Standalone Fabric client utility mod for Minecraft Java 26.3. This is one indepe
 
 ## Shared settings screen
 
-Press O to open the unified QYS-UTILS settings screen. It has eight tabs: AutoTotem, Mace Hitter, Combat, Crystal / Anchor, Movement, Chat Games, AutoTntCart information, AutoTntCart, and Keybinds. The panel uses compact text, draggable slider controls, and per-tab scrolling. The screen uses a bundled anti-aliased Lato font so it does not depend on fonts installed on your computer. Changes save immediately and again when the screen closes. Crystal / Anchor settings are split into own-crystal and own-anchor columns; changes are saved to qys-auto-place-combat.properties.
+Press O to open the unified QYS-UTILS settings screen. It has eight tabs: AutoTotem, Mace Hitter, Combat, Crystal / Anchor, Movement, Chat Games, AutoTntCart, and Keybinds. The panel uses compact text, draggable slider controls, and per-tab scrolling. The screen uses a bundled anti-aliased Lato font so it does not depend on fonts installed on your computer. Changes save immediately and again when the screen closes. Crystal / Anchor settings are split into own-crystal and own-anchor columns; changes are saved to qys-auto-place-combat.properties.
 
 ## Keybinds
 The KEYBINDS tab lets you reassign every QYS-UTILS module toggle and action using a keyboard key or mouse button. Mouse buttons 4 and 5 are supported. Click a binding, press the new key/button, or press Escape to clear it. AutoTntCart's C trigger and V mode-cycle bindings are included. Duplicate assignments are flagged, and bindings are saved in config/qys-utils-keybinds.properties.
 
-Default bindings: O opens the menu; T toggles AutoTotem; R toggles Mace Hitter; G triggers Slam Now; K toggles Aim Assist; L toggles Trigger Bot; J toggles own-crystal breaking; H toggles the Anchor Combo; P toggles Auto Sprint; U toggles Chat Game Guesser. AutoTntCart uses its separate C and V bindings, configurable from Minecraft Controls.
+Default bindings: O opens the menu; T toggles AutoTotem; R toggles Mace Hitter; G triggers Slam Now; K toggles Aim Assist; L toggles Trigger Bot; J toggles own-crystal breaking; H toggles the Anchor Combo; P toggles Auto Sprint; U toggles Chat Game Guesser. AutoTntCart uses C to trigger and V to cycle modes; both are configurable in the KEYBINDS tab.
 
 ## Configuration files
 - config/autism-autototem.properties

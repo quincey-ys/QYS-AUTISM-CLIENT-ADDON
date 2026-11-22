@@ -578,7 +578,7 @@ public final class QysUtilsConfigScreen extends Screen {
             case 3 -> "CRYSTAL / ANCHOR CONFIGURATION";
             case 4 -> "MOVEMENT CONFIGURATION";
             case 5 -> "CHAT GAME GUESSER";
-            case 6 -> "ORIGINAL AUTOTNTCART BUNDLED";
+            case 6 -> "AUTOTNTCART SETTINGS";
             case 7 -> "EDITABLE KEYBOARD / MOUSE BINDS";
             default -> "AUTOTOTEM CONFIGURATION";
         };

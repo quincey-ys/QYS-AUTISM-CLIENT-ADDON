@@ -13,7 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.vehicle.minecart.MinecartTNT;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -41,7 +41,6 @@ import java.util.function.Predicate;
  */
 public final class AutoTntCartModule {
     private static final Path CONFIG = Path.of("config", "qys-auto-tnt-cart.properties");
-    private static final long DEFAULT_COOLDOWN_MS = 500L;
 
     public static boolean enabled = true;
     public static boolean autoRestock = true;
@@ -428,8 +427,8 @@ public final class AutoTntCartModule {
 
             ItemStack displaced = player.getInventory().getItem(targetSlot).copy();
             ItemStack moved = source.copy();
-            client.gameMode.handleInventoryMouseClick(
-                    player.inventoryMenu.containerId, sourceSlot, targetSlot, ClickType.SWAP, player
+            client.gameMode.handleContainerInput(
+                    player.containerMenu.containerId, sourceSlot, targetSlot, ContainerInput.SWAP, player
             );
             restockSwaps.add(new RestockSwap(sourceSlot, targetSlot, displaced, moved));
             reservedHotbarSlots.add(targetSlot);
@@ -473,9 +472,9 @@ public final class AutoTntCartModule {
                 boolean destinationStillOurs = hotbarNow.isEmpty()
                         || ItemStack.isSameItemSameComponents(hotbarNow, swap.moved);
                 if (sourceStillDisplaced && destinationStillOurs && !swap.displaced.isEmpty()) {
-                    client.gameMode.handleInventoryMouseClick(
-                            player.inventoryMenu.containerId, swap.sourceSlot, swap.hotbarSlot,
-                            ClickType.SWAP, player
+                    client.gameMode.handleContainerInput(
+                            player.containerMenu.containerId, swap.sourceSlot, swap.hotbarSlot,
+                            ContainerInput.SWAP, player
                     );
                 }
             }
