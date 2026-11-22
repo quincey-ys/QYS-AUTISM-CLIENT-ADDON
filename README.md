@@ -41,7 +41,7 @@ Standalone Fabric client utility mod for Minecraft Java 26.3. This is one indepe
 
 ### AutoTntCart (client-side vanilla implementation)
 - Burst, Place, Chain, and Detonate are implemented with normal vanilla client interactions; the server does not need AutoTntCart installed.
-- Place uses the actual Rail and TNT Minecart items. Chain uses actual Rail items and places up to five rails on supported blocks. Burst places the rail/cart, then fires a real Flame Bow shot. Detonate fires a real Flame Bow shot toward a nearby TNT minecart.
+- Place uses the actual Rail and TNT Minecart items. Chain uses actual Rail items and places up to five rails on supported blocks, pulling further rail stacks from the main inventory when Auto Restock is enabled. Burst places the rail/cart, then fires a real Flame Bow shot (10-tick draw by default). Detonate fires a real Flame Bow shot toward a nearby TNT minecart. Infinity bows do not consume the arrow used for firing.
 - Auto Restock moves needed stacks from main inventory into temporarily available hotbar slots using normal inventory SWAP clicks, then restores displaced hotbar items when possible.
 - Smart Placement searches nearby supported rail positions. Vanilla placement support, server permissions, reach, inventory consumption, bow draw time, and server anti-cheat rules still apply; this implementation does not spawn entities or place blocks through privileged server code.
 - Default controls are C to trigger and V to cycle modes. Both are editable from the KEYBINDS tab.

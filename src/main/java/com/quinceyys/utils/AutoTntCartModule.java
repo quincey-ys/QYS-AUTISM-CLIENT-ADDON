@@ -46,7 +46,7 @@ public final class AutoTntCartModule {
     public static boolean autoRestock = true;
     public static boolean smartAim = true;
     public static int cooldownMs = 500;
-    public static int burstChargeTicks = 4;
+    public static int burstChargeTicks = 10;
     public static Mode currentMode = Mode.BURST;
 
     public static KeyMapping triggerKey;
@@ -235,7 +235,12 @@ public final class AutoTntCartModule {
                 finish(client, "Missing Rail. Enable Auto Restock or move rails to your hotbar.", false);
                 return;
             }
-            int available = player.getInventory().getItem(railSlot).getCount();
+            int available = 0;
+            int inventoryLimit = autoRestock ? 36 : 9;
+            for (int slot = 0; slot < inventoryLimit; slot++) {
+                ItemStack stack = player.getInventory().getItem(slot);
+                if (stack.is(Items.RAIL)) available += stack.getCount();
+            }
             Direction facing = player.getDirection();
             for (int i = 0; i < Math.min(5, available); i++) {
                 BlockPos pos = placement.position.relative(facing, i);
@@ -309,6 +314,14 @@ public final class AutoTntCartModule {
         if (chainIndex >= chain.size()) {
             finish(client, "Placed " + chainIndex + " rail(s).", true);
             return;
+        }
+        if (railSlot < 0 || !activePlayer.getInventory().getItem(railSlot).is(Items.RAIL)) {
+            if (railSlot >= 0) reservedHotbarSlots.remove(railSlot);
+            railSlot = ensureHotbarItem(client, stack -> stack.is(Items.RAIL));
+            if (railSlot < 0) {
+                finish(client, "Placed " + chainIndex + " rail(s); no more rails were available.", true);
+                return;
+            }
         }
         Placement next = chain.get(chainIndex);
         selectSlot(activePlayer, railSlot);
@@ -470,7 +483,7 @@ public final class AutoTntCartModule {
                         ? sourceNow.isEmpty()
                         : ItemStack.isSameItemSameComponents(sourceNow, swap.displaced);
                 boolean destinationStillOurs = hotbarNow.isEmpty()
-                        || ItemStack.isSameItemSameComponents(hotbarNow, swap.moved);
+                        || hotbarNow.is(swap.moved.getItem());
                 if (sourceStillDisplaced && destinationStillOurs && !swap.displaced.isEmpty()) {
                     client.gameMode.handleContainerInput(
                             player.containerMenu.containerId, swap.sourceSlot, swap.hotbarSlot,
@@ -533,7 +546,7 @@ public final class AutoTntCartModule {
             autoRestock = Boolean.parseBoolean(properties.getProperty("autoRestock", "true"));
             smartAim = Boolean.parseBoolean(properties.getProperty("smartAim", "true"));
             cooldownMs = integer(properties, "cooldownMs", 500, 0, 10000);
-            burstChargeTicks = integer(properties, "burstChargeTicks", 4, 1, 20);
+            burstChargeTicks = integer(properties, "burstChargeTicks", 10, 1, 20);
             int mode = integer(properties, "defaultMode", 0, 0, Mode.values().length - 1);
             currentMode = Mode.values()[mode];
             saveConfig();

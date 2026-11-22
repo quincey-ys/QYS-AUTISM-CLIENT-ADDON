@@ -13,6 +13,6 @@ public final class QysUtilsClient implements ClientModInitializer {
         ChatGameGuesserModule.initialize();
         AutoTntCartModule.initialize();
         QysKeybindManager.initialize();
-        System.out.println("[QYS-UTILS] AutoTotem, Mace Hitter, Combat Assist, Crystal/Anchor, Auto Sprint, Chat Game Guesser, bundled AutoTntCart, and shared keybinds initialized.");
+        System.out.println("[QYS-UTILS] AutoTotem, Mace Hitter, Combat Assist, Crystal/Anchor, Auto Sprint, Chat Game Guesser, client-side AutoTntCart, and shared keybinds initialized.");
     }
 }
