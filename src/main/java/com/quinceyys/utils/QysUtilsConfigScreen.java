@@ -472,6 +472,8 @@ public final class QysUtilsConfigScreen extends Screen {
         AutoSprintModule.saveConfig();
         CombatAssistModule.saveConfig();
         ChatGameGuesserModule.saveConfig();
+        AutoTntCartModule.saveConfig();
+        QysKeybindManager.save();
     }
 
     private static final class ConfigSlider extends AbstractSliderButton {
