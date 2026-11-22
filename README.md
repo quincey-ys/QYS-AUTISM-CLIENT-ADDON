@@ -18,6 +18,13 @@ Standalone Fabric client utility mod for Minecraft Java 26.3. This is one indepe
 - Does not change movement speed or send custom movement packets.
 - Disabled by default; settings are saved in config/qys-auto-sprint.properties.
 
+### Combat Assist
+- Separate Aim Assist and Trigger Bot toggles.
+- Aim Assist supports configurable player, hostile-mob, and passive-mob targets, range, FOV, strength, line-of-sight checks, and teammate filtering.
+- Aim Assist defaults to requiring the attack key to be held.
+- Trigger Bot only attacks a valid entity already under the crosshair and supports independent target filters, weapon-only mode, and attack delay.
+- Both combat assists are disabled by default and use vanilla player attack/rotation APIs.
+
 ### Mace Hitter
 - Nearest-target selection with configurable range.
 - Player-only or all-living-entity targeting.
@@ -25,6 +32,12 @@ Standalone Fabric client utility mod for Minecraft Java 26.3. This is one indepe
 - Automatic hotbar mace selection and jump assistance.
 - Optional falling-only attacks and shield-stun priority.
 - Configurable attack delay and manual Slam Now action.
+
+### Chat Game Guesser
+- Recognizes supported math questions, Minecraft word scrambles, reversed-text prompts, typing prompts, and a built-in set of Minecraft trivia.
+- Configurable answer delay and minimum interval between answers.
+- Suggestion-only mode displays the answer in the action bar; Auto Send is a separate setting and is off by default.
+- Disabled by default; settings are stored in config/qys-chat-game-guesser.properties.
 
 ### Crystal / Anchor
 - Breaks only an End Crystal spawned at a block you just used with an End Crystal.
@@ -36,7 +49,7 @@ Standalone Fabric client utility mod for Minecraft Java 26.3. This is one indepe
 
 ## Shared settings screen
 
-Press O to open the unified QYS-UTILS settings screen. It contains AutoTotem, Mace Hitter, Crystal / Anchor, and Movement tabs, opaque panels with squircle corners, and settings controls. The screen uses a bundled anti-aliased Lato font so it does not depend on fonts installed on your computer. Changes save immediately and again when the screen closes. Crystal / Anchor settings are split into own-crystal and own-anchor columns; changes are saved to qys-auto-place-combat.properties.
+Press O to open the unified QYS-UTILS settings screen. It has six tabs: AutoTotem, Mace Hitter, Combat, Crystal / Anchor, Movement, and Chat Games. The panel uses compact text, draggable slider controls, and per-tab scrolling. The screen uses a bundled anti-aliased Lato font so it does not depend on fonts installed on your computer. Changes save immediately and again when the screen closes. Crystal / Anchor settings are split into own-crystal and own-anchor columns; changes are saved to qys-auto-place-combat.properties.
 
 ## Keybinds
 - T: Toggle AutoTotem
@@ -51,6 +64,8 @@ All keybinds can be changed under Options > Controls > Key Binds.
 - config/qys-mace-hitter.properties
 - config/qys-auto-place-combat.properties (Crystal and Anchor delays/rate limits)
 - config/qys-auto-sprint.properties (Auto Sprint settings)
+- config/qys-combat-assist.properties (Aim Assist and Trigger Bot settings)
+- config/qys-chat-game-guesser.properties (Chat Game Guesser settings)
 
 The AutoTotem config filename and property names are kept compatible with the original QYS AutoTotem config.
 

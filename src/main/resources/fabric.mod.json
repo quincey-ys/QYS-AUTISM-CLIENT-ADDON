@@ -3,7 +3,7 @@
   "id": "qys_utils",
   "version": "${version}",
   "name": "QYS-UTILS",
-  "description": "Unified standalone Fabric client utilities: AutoTotem, Mace Hitter, and automatic crystal/anchor placement combat.",
+  "description": "Standalone Fabric client utilities: AutoTotem, Mace Hitter, Combat Assist, Auto Sprint, Crystal/Anchor tools, and Chat Game Guesser.",
   "authors": ["quincey-ys"],
   "environment": "client",
   "entrypoints": {
