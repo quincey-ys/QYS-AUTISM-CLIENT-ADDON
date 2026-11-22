@@ -42,6 +42,7 @@ public final class MaceHitterModule {
     private static int delayCounter;
     private static Entity currentTarget;
     private static boolean jumpHeldByMod;
+    private static LocalPlayer autoSwapPlayer;
     private static int previousHotbarSlot = -1;
     private static int autoSelectedMaceSlot = -1;
     private static boolean autoSwapPausedByUser;
@@ -162,6 +163,7 @@ public final class MaceHitterModule {
         int selectedSlot = player.getInventory().getSelectedSlot();
         if (autoSelectedMaceSlot >= 0 && selectedSlot != autoSelectedMaceSlot) {
             // The user manually changed hotbar slots. Respect that choice until the target leaves range.
+            autoSwapPlayer = null;
             previousHotbarSlot = -1;
             autoSelectedMaceSlot = -1;
             autoSwapPausedByUser = true;
@@ -172,6 +174,7 @@ public final class MaceHitterModule {
             ItemStack stack = player.getInventory().getItem(slot);
             if (stack.getItem() instanceof MaceItem) {
                 if (autoSelectedMaceSlot < 0) {
+                    autoSwapPlayer = player;
                     previousHotbarSlot = selectedSlot;
                     autoSelectedMaceSlot = slot;
                 }
@@ -183,10 +186,11 @@ public final class MaceHitterModule {
     }
 
     private static void restoreAutoSwap(LocalPlayer player) {
-        if (previousHotbarSlot >= 0 && autoSelectedMaceSlot >= 0
+        if (autoSwapPlayer == player && previousHotbarSlot >= 0 && autoSelectedMaceSlot >= 0
                 && player.getInventory().getSelectedSlot() == autoSelectedMaceSlot) {
             player.getInventory().setSelectedSlot(previousHotbarSlot);
         }
+        autoSwapPlayer = null;
         previousHotbarSlot = -1;
         autoSelectedMaceSlot = -1;
     }
