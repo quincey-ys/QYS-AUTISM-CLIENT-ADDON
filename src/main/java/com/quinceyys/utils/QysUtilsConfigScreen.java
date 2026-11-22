@@ -40,7 +40,7 @@ public final class QysUtilsConfigScreen extends Screen {
         panelY = (this.height - panelHeight) / 2;
 
         int tabY = panelY + 34;
-        int tabWidth = Math.min(132, (panelWidth - 32) / 3);
+        int tabWidth = Math.min(132, (panelWidth - 32) / 4);
         int tabStartX = panelX + 10;
         addRenderableWidget(Button.builder(Component.literal("AUTO TOTEM"), b -> openTab(0))
                 .bounds(tabStartX, tabY, tabWidth, 20).build());
@@ -48,6 +48,8 @@ public final class QysUtilsConfigScreen extends Screen {
                 .bounds(tabStartX + tabWidth + 4, tabY, tabWidth, 20).build());
         addRenderableWidget(Button.builder(Component.literal("CRYSTAL / ANCHOR"), b -> openTab(2))
                 .bounds(tabStartX + (tabWidth + 4) * 2, tabY, tabWidth, 20).build());
+        addRenderableWidget(Button.builder(Component.literal("MOVEMENT"), b -> openTab(3))
+                .bounds(tabStartX + (tabWidth + 4) * 3, tabY, tabWidth, 20).build());
 
         int leftX = panelX + 14;
         int rightX = panelX + panelWidth / 2 + 4;
@@ -117,7 +119,7 @@ public final class QysUtilsConfigScreen extends Screen {
                     () -> MaceHitterModule.delayTicks, v -> MaceHitterModule.delayTicks = v);
             addRenderableWidget(Button.builder(Component.literal("SLAM NOW  [G]"), b -> MaceHitterModule.slamNow())
                     .bounds(rightX, startY + rowHeight * 3, colWidth, 20).build());
-        } else {
+        } else if (selectedTab == 2) {
             int y = startY;
             addToggle(leftX, y, colWidth, "Break Your Crystals",
                     () -> AutoPlaceCombatModule.autoBreakOwnCrystals,
@@ -157,6 +159,14 @@ public final class QysUtilsConfigScreen extends Screen {
             addIntStepper(rightX, y, colWidth, "Combo Cooldown (ms)", 0, 5000, 100,
                     () -> AutoPlaceCombatModule.anchorCooldownMs,
                     v -> AutoPlaceCombatModule.anchorCooldownMs = v);
+        } else {
+            int y = startY;
+            addToggle(leftX, y, colWidth, "Auto Sprint",
+                    () -> AutoSprintModule.enabled,
+                    v -> AutoSprintModule.enabled = v); y += rowHeight;
+            addToggle(leftX, y, colWidth, "Pause While Using Items",
+                    () -> AutoSprintModule.pauseWhileUsingItems,
+                    v -> AutoSprintModule.pauseWhileUsingItems = v);
         }
 
         addRenderableWidget(Button.builder(Component.literal("DONE  •  SAVE SETTINGS"), b -> onClose())
@@ -250,6 +260,7 @@ public final class QysUtilsConfigScreen extends Screen {
         AutoTotemModule.saveConfig();
         MaceHitterModule.saveConfig();
         AutoPlaceCombatModule.saveConfig();
+        AutoSprintModule.saveConfig();
     }
 
     private void fillSquircle(GuiGraphicsExtractor graphics, int x, int y, int width, int height,
@@ -289,6 +300,7 @@ public final class QysUtilsConfigScreen extends Screen {
         String title = switch (selectedTab) {
             case 1 -> "MACE HITTER CONFIGURATION";
             case 2 -> "CRYSTAL / ANCHOR CONFIGURATION";
+            case 3 -> "MOVEMENT CONFIGURATION";
             default -> "AUTOTOTEM CONFIGURATION";
         };
         graphics.text(this.font, title, panelX + 16, panelY + 56, 0xFFE4EAF5, false);
@@ -297,6 +309,14 @@ public final class QysUtilsConfigScreen extends Screen {
             graphics.text(this.font, "OWN-PLACED CRYSTALS", panelX + 18, panelY + 66, 0xFFE4EAF5, true);
             graphics.text(this.font, "OWN-PLACED ANCHORS", panelX + panelWidth / 2 + 12,
                     panelY + 66, 0xFFE4EAF5, true);
+        } else if (selectedTab == 3) {
+            int infoX = panelX + panelWidth / 2 + 18;
+            graphics.text(this.font, "AUTOMATIC SPRINT", infoX, panelY + 82, 0xFFE4EAF5, true);
+            graphics.text(this.font, "Sprints while moving forward.", infoX, panelY + 102, 0xFFD5DCEC, false);
+            graphics.text(this.font, "Stops forcing sprint when you stop,", infoX, panelY + 116, 0xFFD5DCEC, false);
+            graphics.text(this.font, "sneak, open a screen, or use an item", infoX, panelY + 130, 0xFFD5DCEC, false);
+            graphics.text(this.font, "when the item-use pause is enabled.", infoX, panelY + 144, 0xFFD5DCEC, false);
+            graphics.text(this.font, "Uses vanilla sprint state and movement.", infoX, panelY + 174, 0xFFD5DCEC, false);
         }
     }
 
