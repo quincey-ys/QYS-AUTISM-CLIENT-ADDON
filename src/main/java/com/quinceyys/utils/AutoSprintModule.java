@@ -48,7 +48,7 @@ public final class AutoSprintModule {
 
         boolean movingForward = client.options.keyUp.isDown()
                 && !client.options.keyDown.isDown();
-        boolean screenClosed = client.screen == null;
+        boolean screenClosed = client.gui.screen() == null;
         boolean notSneaking = !player.isShiftKeyDown();
         boolean notFallFlying = !player.isFallFlying();
         boolean itemUseAllowsSprint = !pauseWhileUsingItems || !player.isUsingItem();
