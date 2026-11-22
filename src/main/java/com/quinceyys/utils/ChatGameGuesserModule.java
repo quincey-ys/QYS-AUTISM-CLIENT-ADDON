@@ -27,7 +27,10 @@ public final class ChatGameGuesserModule {
             "(?i)(-?\\d+(?:\\.\\d+)?)\\s*(\\+|plus|add|\\-|−|minus|subtract|\\*|x|×|times|multiply|/|÷|divide)\\s*(-?\\d+(?:\\.\\d+)?)"
     );
     private static final Pattern SCRAMBLE = Pattern.compile(
-            "(?i)(?:unscramble|unjumble|scramble(?:d)? word|rearrange(?: the letters)?)(?:\\s+(?:this|the|following))?(?:\\s+word)?\\s*[:：-]?\\s*([a-z]{3,18})\\b"
+            "(?i)(?:unscramble|unjumble|word scramble|scramble(?:d)? word|rearrange(?: the letters)?)(?:\\s+(?:this|the|following))?(?:\\s+word)?\\s*[:：-]?\\s*([a-z]{3,18})\\b"
+    );
+    private static final Pattern NUMBER_RANGE = Pattern.compile(
+            "(?i)(?:guess|find|pick)(?: the)? number(?: between| from)\\s+(\\d{1,7})\\s*(?:and|to|[-–])\\s*(\\d{1,7})"
     );
     private static final Pattern REVERSE = Pattern.compile(
             "(?i)(?:reverse|backwards|backward)(?: this| the| that)?(?: word| text|string)?\\s*[:：-]\\s*([\\p{L}\\p{N}]+)\\b"
@@ -73,6 +76,7 @@ public final class ChatGameGuesserModule {
     public static boolean solveReverse = true;
     public static boolean solveTyping = true;
     public static boolean solveTrivia = true;
+    public static boolean solveNumberGuess = true;
     public static boolean onlyRecognizedPrompts = true;
     public static int answerDelayMs = 900;
     public static int minimumSendIntervalMs = 1800;
@@ -81,6 +85,10 @@ public final class ChatGameGuesserModule {
     private static String lastPrompt;
     private static long answerDueAt;
     private static long lastAnswerAt;
+    private static boolean numberGuessActive;
+    private static int numberGuessLow = 1;
+    private static int numberGuessHigh = 100;
+    private static int lastNumberGuess = 50;
 
     private ChatGameGuesserModule() {}
 
@@ -99,17 +107,73 @@ public final class ChatGameGuesserModule {
         if (!enabled || rawMessage == null || rawMessage.isBlank()) return;
 
         String message = stripFormatting(rawMessage).trim();
-        if (message.isEmpty() || (onlyRecognizedPrompts && !looksLikeGamePrompt(message))) return;
+        if (message.isEmpty()) return;
 
+        String numberAnswer = handleNumberGuessMessage(message);
+        if (numberAnswer != null) {
+            queueAnswer(message, numberAnswer);
+            return;
+        }
+
+        if (onlyRecognizedPrompts && !looksLikeGamePrompt(message)) return;
         String answer = solve(message);
         if (answer == null || answer.isBlank()) return;
+        queueAnswer(message, answer);
+    }
 
+    private static void queueAnswer(String message, String answer) {
         long now = System.currentTimeMillis();
         if (message.equals(lastPrompt) && now - lastAnswerAt < 5000L) return;
-
         lastPrompt = message;
         pendingAnswer = answer;
         answerDueAt = now + answerDelayMs;
+    }
+
+    private static String handleNumberGuessMessage(String message) {
+        if (!solveNumberGuess) return null;
+        String lower = message.toLowerCase(Locale.ROOT);
+
+        if (numberGuessActive) {
+            if (lower.contains("correct") || lower.contains("you win")
+                    || lower.contains("winner") || lower.contains("guessed it")) {
+                numberGuessActive = false;
+                return null;
+            }
+
+            if (lower.contains("too high") || lower.contains("lower")
+                    || lower.contains("smaller") || lower.contains("less than")) {
+                numberGuessHigh = Math.min(numberGuessHigh, lastNumberGuess - 1);
+                return nextNumberGuess();
+            }
+            if (lower.contains("too low") || lower.contains("higher")
+                    || lower.contains("greater") || lower.contains("more than")) {
+                numberGuessLow = Math.max(numberGuessLow, lastNumberGuess + 1);
+                return nextNumberGuess();
+            }
+        }
+
+        Matcher range = NUMBER_RANGE.matcher(message);
+        if (!range.find()) return null;
+        try {
+            int first = Integer.parseInt(range.group(1));
+            int second = Integer.parseInt(range.group(2));
+            numberGuessLow = Math.min(first, second);
+            numberGuessHigh = Math.max(first, second);
+            numberGuessActive = numberGuessLow < numberGuessHigh;
+            return numberGuessActive ? nextNumberGuess() : null;
+        } catch (NumberFormatException exception) {
+            numberGuessActive = false;
+            return null;
+        }
+    }
+
+    private static String nextNumberGuess() {
+        if (numberGuessLow > numberGuessHigh) {
+            numberGuessActive = false;
+            return null;
+        }
+        lastNumberGuess = numberGuessLow + (numberGuessHigh - numberGuessLow) / 2;
+        return Integer.toString(lastNumberGuess);
     }
 
     private static void onEndTick(Minecraft client) {
@@ -178,6 +242,9 @@ public final class ChatGameGuesserModule {
                 || lower.contains("first to answer")
                 || lower.contains("fastest to answer")
                 || lower.contains("trivia")
+                || lower.contains("guess the number")
+                || lower.contains("find the number")
+                || lower.contains("pick the number")
                 || lower.contains("what is")
                 || lower.contains("who is")
                 || lower.contains("which mob")
@@ -323,6 +390,7 @@ public final class ChatGameGuesserModule {
             solveReverse = bool(p, "solveReverse", true);
             solveTyping = bool(p, "solveTyping", true);
             solveTrivia = bool(p, "solveTrivia", true);
+            solveNumberGuess = bool(p, "solveNumberGuess", true);
             onlyRecognizedPrompts = bool(p, "onlyRecognizedPrompts", true);
             answerDelayMs = integer(p, "answerDelayMs", 900, 0, 5000);
             minimumSendIntervalMs = integer(p, "minimumSendIntervalMs", 1800, 500, 10000);
@@ -342,6 +410,7 @@ public final class ChatGameGuesserModule {
         p.setProperty("solveReverse", Boolean.toString(solveReverse));
         p.setProperty("solveTyping", Boolean.toString(solveTyping));
         p.setProperty("solveTrivia", Boolean.toString(solveTrivia));
+        p.setProperty("solveNumberGuess", Boolean.toString(solveNumberGuess));
         p.setProperty("onlyRecognizedPrompts", Boolean.toString(onlyRecognizedPrompts));
         p.setProperty("answerDelayMs", Integer.toString(answerDelayMs));
         p.setProperty("minimumSendIntervalMs", Integer.toString(minimumSendIntervalMs));
