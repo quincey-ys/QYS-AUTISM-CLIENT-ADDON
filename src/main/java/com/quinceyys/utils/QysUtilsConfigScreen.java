@@ -21,6 +21,7 @@ public final class QysUtilsConfigScreen extends Screen {
     private final Screen parent;
     private final int selectedTab;
     private int scrollOffset;
+    private boolean configDirty;
 
     private int panelX;
     private int panelY;
@@ -286,7 +287,12 @@ public final class QysUtilsConfigScreen extends Screen {
     }
 
     private void openTab(int tab) {
+        if (configDirty) persist();
         Minecraft.getInstance().gui.setScreen(new QysUtilsConfigScreen(parent, tab));
+    }
+
+    private void markConfigDirty() {
+        configDirty = true;
     }
 
     private void addButton(int x, int y, int width, String label,
@@ -323,7 +329,7 @@ public final class QysUtilsConfigScreen extends Screen {
         int displayY = displayY(y);
         ConfigSlider slider = new ConfigSlider(
                 x, displayY, width, 19, label, min, max, step, getter.getAsDouble(),
-                setter, this::persist
+                setter, this::markConfigDirty
         );
         slider.visible = rowVisible(y);
         addRenderableWidget(slider);
@@ -414,7 +420,7 @@ public final class QysUtilsConfigScreen extends Screen {
             case 4 -> 2;
             case 5 -> 9;
             case 6 -> 1;
-            case 7 -> (QysKeybindManager.ids().size() + 1) / 2;
+            case 7 -> Math.min(6, QysKeybindManager.ids().size());
             default -> 1;
         };
     }
@@ -464,7 +470,7 @@ public final class QysUtilsConfigScreen extends Screen {
     }
 
     private void persist() {
-        // Slider drags can call this every frame. Save only the active tab's settings.
+        // Save only the active tab. Slider changes are flushed when leaving the tab or closing the screen.
         switch (selectedTab) {
             case 0 -> AutoTotemModule.saveConfig();
             case 1 -> MaceHitterModule.saveConfig();
@@ -475,6 +481,7 @@ public final class QysUtilsConfigScreen extends Screen {
             case 7 -> QysKeybindManager.save();
             default -> { }
         }
+        configDirty = false;
     }
 
     private static final class ConfigSlider extends AbstractSliderButton {
@@ -630,7 +637,8 @@ public final class QysUtilsConfigScreen extends Screen {
 
     @Override
     public void onClose() {
-        persist();
+        if (configDirty) persist();
+        else persist();
         Minecraft.getInstance().gui.setScreen(parent);
     }
 }
