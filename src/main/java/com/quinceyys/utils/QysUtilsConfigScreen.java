@@ -336,15 +336,6 @@ public final class QysUtilsConfigScreen extends Screen {
         addRenderableWidget(button);
     }
 
-    private void addTntModeButton(int x, int y, int width) {
-        Button button = Button.builder(Component.literal(fit("Mode: " + AutoTntCartModule.mode, width - 14)), b -> {
-            AutoTntCartModule.cycleMode();
-            b.setMessage(Component.literal(fit("Mode: " + AutoTntCartModule.mode, width - 14)));
-        }).bounds(x, displayY(y), width, 20).build();
-        button.visible = rowVisible(y);
-        addRenderableWidget(button);
-    }
-
     private void addKeybindButton(int x, int y, int width, String id) {
         String label = QysKeybindManager.label(id);
         String message = label + ": " + QysKeybindManager.keyText(id) + QysKeybindManager.conflictText(id);
