@@ -125,7 +125,7 @@ public final class QysUtilsConfigScreen extends Screen {
                     () -> MaceHitterModule.range, v -> MaceHitterModule.range = v); y += ROW_HEIGHT;
             addSlider(rightX, y, colWidth, "Attack Delay (ticks)", 0, 20, 1,
                     () -> MaceHitterModule.delayTicks, v -> MaceHitterModule.delayTicks = (int) Math.round(v)); y += ROW_HEIGHT;
-            addButton(rightX, y, colWidth, "SLAM NOW  [G]", b -> MaceHitterModule.slamNow());
+            addRowButton(rightX, y, colWidth, "SLAM NOW  [G]", b -> MaceHitterModule.slamNow());
         } else if (selectedTab == 2) {
             y = startY;
             addToggle(leftX, y, colWidth, "Aim Assist",
@@ -293,6 +293,15 @@ public final class QysUtilsConfigScreen extends Screen {
                            java.util.function.Consumer<Button> action) {
         Button button = Button.builder(Component.literal(fit(label, width - 14)), b -> action.accept(b))
                 .bounds(x, y, width, 20).build();
+        addRenderableWidget(button);
+    }
+
+    private void addRowButton(int x, int y, int width, String label,
+                               java.util.function.Consumer<Button> action) {
+        int displayY = displayY(y);
+        Button button = Button.builder(Component.literal(fit(label, width - 14)), b -> action.accept(b))
+                .bounds(x, displayY, width, 19).build();
+        button.visible = rowVisible(y);
         addRenderableWidget(button);
     }
 
