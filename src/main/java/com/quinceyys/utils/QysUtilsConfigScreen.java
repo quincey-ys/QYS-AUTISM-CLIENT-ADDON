@@ -56,7 +56,7 @@ public final class QysUtilsConfigScreen extends Screen {
         addTab("CRYSTAL / ANCHOR", 3, tabStartX + (tabWidth + tabGap) * 3, firstTabY, tabWidth);
         addTab("MOVEMENT", 4, tabStartX, secondTabY, tabWidth);
         addTab("CHAT GAMES", 5, tabStartX + tabWidth + tabGap, secondTabY, tabWidth);
-        addTab("TNT CART", 6, tabStartX + (tabWidth + tabGap) * 2, secondTabY, tabWidth);
+        addTab("AUTOTNTCART", 6, tabStartX + (tabWidth + tabGap) * 2, secondTabY, tabWidth);
         addTab("KEYBINDS", 7, tabStartX + (tabWidth + tabGap) * 3, secondTabY, tabWidth);
 
         int leftX = panelX + 14;
@@ -252,24 +252,8 @@ public final class QysUtilsConfigScreen extends Screen {
                     () -> ChatGameGuesserModule.minimumSendIntervalMs,
                     v -> ChatGameGuesserModule.minimumSendIntervalMs = (int) Math.round(v));
         } else if (selectedTab == 6) {
-            y = startY;
-            addToggle(leftX, y, colWidth, "Auto TNT Cart Enabled",
-                    () -> AutoTntCartModule.enabled, AutoTntCartModule::setEnabled); y += ROW_HEIGHT;
-            addTntModeButton(leftX, y, colWidth);
-
-            y = startY + 22;
-            addSlider(rightX, y, colWidth, "Rail to Cart Delay (ms)", 0, 2000, 25,
-                    () -> AutoTntCartModule.railToCartDelayMs,
-                    v -> AutoTntCartModule.railToCartDelayMs = (int) Math.round(v)); y += ROW_HEIGHT;
-            addSlider(rightX, y, colWidth, "Cart to Bow Delay (ms)", 0, 2000, 25,
-                    () -> AutoTntCartModule.cartToBowDelayMs,
-                    v -> AutoTntCartModule.cartToBowDelayMs = (int) Math.round(v)); y += ROW_HEIGHT;
-            addSlider(rightX, y, colWidth, "Bow Charge (ms)", 200, 2000, 25,
-                    () -> AutoTntCartModule.bowChargeMs,
-                    v -> AutoTntCartModule.bowChargeMs = (int) Math.round(v)); y += ROW_HEIGHT;
-            addSlider(rightX, y, colWidth, "Repeat Cooldown (ms)", 0, 10000, 100,
-                    () -> AutoTntCartModule.repeatCooldownMs,
-                    v -> AutoTntCartModule.repeatCooldownMs = (int) Math.round(v));
+            // The original AutoTntCart is bundled as its own nested Fabric mod.
+            // Its full settings screen is provided by its Mod Menu integration.
         } else if (selectedTab == 7) {
             java.util.List<String> ids = QysKeybindManager.ids();
             for (int i = 0; i < ids.size(); i++) {
@@ -429,7 +413,7 @@ public final class QysUtilsConfigScreen extends Screen {
             case 3 -> 6;
             case 4 -> 2;
             case 5 -> 9;
-            case 6 -> 4;
+            case 6 -> 1;
             case 7 -> (QysKeybindManager.ids().size() + 1) / 2;
             default -> 1;
         };
@@ -488,7 +472,6 @@ public final class QysUtilsConfigScreen extends Screen {
             case 3 -> AutoPlaceCombatModule.saveConfig();
             case 4 -> AutoSprintModule.saveConfig();
             case 5 -> ChatGameGuesserModule.saveConfig();
-            case 6 -> AutoTntCartModule.saveConfig();
             case 7 -> QysKeybindManager.save();
             default -> { }
         }
@@ -566,7 +549,7 @@ public final class QysUtilsConfigScreen extends Screen {
             case 3 -> "CRYSTAL / ANCHOR CONFIGURATION";
             case 4 -> "MOVEMENT CONFIGURATION";
             case 5 -> "CHAT GAME GUESSER";
-            case 6 -> "AUTO TNT CART CONFIGURATION";
+            case 6 -> "ORIGINAL AUTOTNTCART BUNDLED";
             case 7 -> "EDITABLE KEYBOARD / MOUSE BINDS";
             default -> "AUTOTOTEM CONFIGURATION";
         };
@@ -599,16 +582,18 @@ public final class QysUtilsConfigScreen extends Screen {
             graphics.text(this.font, "Auto Send is off by default.", panelX + panelWidth / 2 + 18,
                     contentTop() + 116, 0xFFD5DCEC, false);
         } else if (selectedTab == 6) {
-            graphics.text(this.font, "RAIL PLACEMENT TRIGGER", panelX + 18,
-                    contentTop() + 60, 0xFFE4EAF5, true);
-            graphics.text(this.font, "Handles vanilla and modded rail blocks.", panelX + 18,
-                    contentTop() + 78, 0xFFD5DCEC, false);
-            graphics.text(this.font, "Requires a TNT Minecart and a Bow.", panelX + 18,
-                    contentTop() + 92, 0xFFD5DCEC, false);
-            graphics.text(this.font, "Manual Assist leaves the bow selected.", panelX + 18,
-                    contentTop() + 106, 0xFFD5DCEC, false);
-            graphics.text(this.font, "TIMING", panelX + panelWidth / 2 + 12,
-                    contentTop() + 5, 0xFFE4EAF5, true);
+            graphics.text(this.font, "ORIGINAL AUTOTNTCART IS BUNDLED AS A SEPARATE FABRIC MOD",
+                    panelX + 18, contentTop() + 18, 0xFFE4EAF5, true);
+            graphics.text(this.font, "Open Mods > AutoTntCart > Configure to change its settings.",
+                    panelX + 18, contentTop() + 44, 0xFFD5DCEC, false);
+            graphics.text(this.font, "Included modes: Burst, Place, Chain and Detonate.",
+                    panelX + 18, contentTop() + 66, 0xFFD5DCEC, false);
+            graphics.text(this.font, "Default keys: C = trigger, V = cycle mode.",
+                    panelX + 18, contentTop() + 88, 0xFFD5DCEC, false);
+            graphics.text(this.font, "A compatible server-side AutoTntCart receiver is required.",
+                    panelX + 18, contentTop() + 110, 0xFFFFD19A, false);
+            graphics.text(this.font, "The reduced legacy QYS cart helper was removed to prevent duplicate controls.",
+                    panelX + 18, contentTop() + 132, 0xFF9EADBF, false);
         } else if (selectedTab == 7) {
             graphics.text(this.font, capturingKeybind == null
                             ? "Click a binding, then press a keyboard key or mouse button. ESC clears it."
