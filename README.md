@@ -39,12 +39,12 @@ Standalone Fabric client utility mod for Minecraft Java 26.3. This is one indepe
 - Suggestion-only mode displays the answer in the action bar; Auto Send is a separate setting and is off by default.
 - Disabled by default; settings are stored in config/qys-chat-game-guesser.properties.
 
-### Original AutoTntCart
-- The original AutoTntCart 2.0.1+26.3 mod is bundled as a separate nested Fabric mod; its full Burst, Place, Chain, and Detonate modes are retained.
-- Configure it through Mods > AutoTntCart > Configure (Cloth Config / Mod Menu integration).
-- Default controls are C to trigger and V to cycle modes; they can also be changed in Minecraft Controls.
-- The mod sends its custom action payload to a compatible server-side AutoTntCart receiver. The client JAR alone does not make unsupported servers accept cart actions.
-- The older reduced QYS quick-cart helper was removed to avoid duplicate automation, keybinds, and settings.
+### AutoTntCart (client-side vanilla implementation)
+- Burst, Place, Chain, and Detonate are implemented with normal vanilla client interactions; the server does not need AutoTntCart installed.
+- Place uses the actual Rail and TNT Minecart items. Chain uses actual Rail items and places up to five rails on supported blocks. Burst places the rail/cart, then fires a real Flame Bow shot. Detonate fires a real Flame Bow shot toward a nearby TNT minecart.
+- Auto Restock moves needed stacks from main inventory into temporarily available hotbar slots using normal inventory SWAP clicks, then restores displaced hotbar items when possible.
+- Smart Placement searches nearby supported rail positions. Vanilla placement support, server permissions, reach, inventory consumption, bow draw time, and server anti-cheat rules still apply; this implementation does not spawn entities or place blocks through privileged server code.
+- Default controls are C to trigger and V to cycle modes. Both are editable from the KEYBINDS tab.
 
 ### Crystal / Anchor
 - Breaks only an End Crystal spawned at a block you just used with an End Crystal.
@@ -56,10 +56,10 @@ Standalone Fabric client utility mod for Minecraft Java 26.3. This is one indepe
 
 ## Shared settings screen
 
-Press O to open the unified QYS-UTILS settings screen. It has eight tabs: AutoTotem, Mace Hitter, Combat, Crystal / Anchor, Movement, Chat Games, AutoTntCart information, and Keybinds. The panel uses compact text, draggable slider controls, and per-tab scrolling. The screen uses a bundled anti-aliased Lato font so it does not depend on fonts installed on your computer. Changes save immediately and again when the screen closes. Crystal / Anchor settings are split into own-crystal and own-anchor columns; changes are saved to qys-auto-place-combat.properties.
+Press O to open the unified QYS-UTILS settings screen. It has eight tabs: AutoTotem, Mace Hitter, Combat, Crystal / Anchor, Movement, Chat Games, AutoTntCart information, AutoTntCart, and Keybinds. The panel uses compact text, draggable slider controls, and per-tab scrolling. The screen uses a bundled anti-aliased Lato font so it does not depend on fonts installed on your computer. Changes save immediately and again when the screen closes. Crystal / Anchor settings are split into own-crystal and own-anchor columns; changes are saved to qys-auto-place-combat.properties.
 
 ## Keybinds
-The KEYBINDS tab lets you reassign every QYS-UTILS module toggle and action using a keyboard key or mouse button. Mouse buttons 4 and 5 are supported. Click a binding, press the new key/button, or press Escape to clear it. Duplicate assignments are flagged, and bindings are saved in config/qys-utils-keybinds.properties.
+The KEYBINDS tab lets you reassign every QYS-UTILS module toggle and action using a keyboard key or mouse button. Mouse buttons 4 and 5 are supported. Click a binding, press the new key/button, or press Escape to clear it. AutoTntCart's C trigger and V mode-cycle bindings are included. Duplicate assignments are flagged, and bindings are saved in config/qys-utils-keybinds.properties.
 
 Default bindings: O opens the menu; T toggles AutoTotem; R toggles Mace Hitter; G triggers Slam Now; K toggles Aim Assist; L toggles Trigger Bot; J toggles own-crystal breaking; H toggles the Anchor Combo; P toggles Auto Sprint; U toggles Chat Game Guesser. AutoTntCart uses its separate C and V bindings, configurable from Minecraft Controls.
 
@@ -71,6 +71,7 @@ Default bindings: O opens the menu; T toggles AutoTotem; R toggles Mace Hitter; 
 - config/qys-combat-assist.properties (Aim Assist and Trigger Bot settings)
 - config/qys-chat-game-guesser.properties (Chat Game Guesser settings)
 - config/qys-utils-keybinds.properties (all QYS-UTILS keyboard and mouse bindings)
+- config/qys-auto-tnt-cart.properties (client-side AutoTntCart settings)
 
 The AutoTotem config filename and property names are kept compatible with the original QYS AutoTotem config.
 
@@ -79,8 +80,7 @@ The AutoTotem config filename and property names are kept compatible with the or
 - Fabric Loader 0.20.1 or newer
 - Fabric API for 26.3
 - Java 25
-- Cloth Config 26.3.159 or newer (required by the bundled AutoTntCart)
-- Mod Menu (optional, for its in-game Configure entry)
+- No additional AutoTntCart server mod or Cloth Config dependency is required.
 
 ## Build
 Run Gradle 9.8.2 with Java 25 and execute gradle build. The GitHub Actions workflow prepares the bundled Lato font and packages its complete license/attribution notice into the JAR. The distributable mod is written to build/libs/QYS-UTILS.jar.

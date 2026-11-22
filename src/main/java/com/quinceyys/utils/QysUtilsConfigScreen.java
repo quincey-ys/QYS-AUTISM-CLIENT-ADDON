@@ -253,8 +253,24 @@ public final class QysUtilsConfigScreen extends Screen {
                     () -> ChatGameGuesserModule.minimumSendIntervalMs,
                     v -> ChatGameGuesserModule.minimumSendIntervalMs = (int) Math.round(v));
         } else if (selectedTab == 6) {
-            // The original AutoTntCart is bundled as its own nested Fabric mod.
-            // Its full settings screen is provided by its Mod Menu integration.
+            y = startY;
+            addToggle(leftX, y, colWidth, "AutoTntCart Enabled",
+                    () -> AutoTntCartModule.enabled, v -> AutoTntCartModule.enabled = v); y += ROW_HEIGHT;
+            addToggle(leftX, y, colWidth, "Auto Restock",
+                    () -> AutoTntCartModule.autoRestock, v -> AutoTntCartModule.autoRestock = v); y += ROW_HEIGHT;
+            addToggle(leftX, y, colWidth, "Smart Placement",
+                    () -> AutoTntCartModule.smartAim, v -> AutoTntCartModule.smartAim = v);
+
+            y = startY;
+            addSlider(rightX, y, colWidth, "Cooldown (ms)", 0, 5000, 50,
+                    () -> AutoTntCartModule.cooldownMs, v -> AutoTntCartModule.cooldownMs = (int) Math.round(v)); y += ROW_HEIGHT;
+            addSlider(rightX, y, colWidth, "Burst Charge (ticks)", 1, 20, 1,
+                    () -> AutoTntCartModule.burstChargeTicks, v -> AutoTntCartModule.burstChargeTicks = (int) Math.round(v)); y += ROW_HEIGHT;
+            addRowButton(rightX, y, colWidth, "MODE: " + AutoTntCartModule.modeLabel(),
+                    b -> {
+                        AutoTntCartModule.cycleMode();
+                        b.setMessage(Component.literal(fit("MODE: " + AutoTntCartModule.modeLabel(), colWidth - 14)));
+                    });
         } else if (selectedTab == 7) {
             java.util.List<String> ids = QysKeybindManager.ids();
             for (int i = 0; i < ids.size(); i++) {
@@ -419,7 +435,7 @@ public final class QysUtilsConfigScreen extends Screen {
             case 3 -> 6;
             case 4 -> 2;
             case 5 -> 9;
-            case 6 -> 1;
+            case 6 -> 3;
             case 7 -> Math.min(6, QysKeybindManager.ids().size());
             default -> 1;
         };
@@ -478,6 +494,7 @@ public final class QysUtilsConfigScreen extends Screen {
             case 3 -> AutoPlaceCombatModule.saveConfig();
             case 4 -> AutoSprintModule.saveConfig();
             case 5 -> ChatGameGuesserModule.saveConfig();
+            case 6 -> AutoTntCartModule.saveConfig();
             case 7 -> QysKeybindManager.save();
             default -> { }
         }
@@ -598,23 +615,19 @@ public final class QysUtilsConfigScreen extends Screen {
             drawWrappedText(graphics, "Auto Send is off by default.",
                     rightTextX, infoY, rightTextWidth, 0xFFD5DCEC);
         } else if (selectedTab == 6) {
-            int infoY = contentTop() + 18;
+            int infoY = contentTop() + 96;
             int infoWidth = panelWidth - 36;
             infoY = drawWrappedText(graphics,
-                    "Original AutoTntCart 2.0.1+26.3 is bundled with all four modes: Burst, Place, Chain and Detonate.",
+                    "All four modes use ordinary vanilla interactions: real rail and minecart placement, plus a Flame Bow shot for Burst and Detonate.",
                     panelX + 18, infoY, infoWidth, 0xFFE4EAF5);
-            infoY += 8;
+            infoY += 4;
             infoY = drawWrappedText(graphics,
-                    "Configure it in Mods > AutoTntCart > Configure (Cloth Config).",
+                    "No AutoTntCart server mod is required. The server still validates inventory, placement support, interaction range and bow shots.",
                     panelX + 18, infoY, infoWidth, 0xFFD5DCEC);
-            infoY += 6;
-            infoY = drawWrappedText(graphics,
-                    "Default keys: C triggers; V cycles modes. Change them in Minecraft Controls.",
-                    panelX + 18, infoY, infoWidth, 0xFFD5DCEC);
-            infoY += 6;
+            infoY += 4;
             drawWrappedText(graphics,
-                    "A compatible server-side AutoTntCart receiver is required.",
-                    panelX + 18, infoY, infoWidth, 0xFFFFD19A);
+                    "Controls: C triggers the selected mode; V cycles modes. Both can be rebound in KEYBINDS.",
+                    panelX + 18, infoY, infoWidth, 0xFFD5DCEC);
         } else if (selectedTab == 7) {
             String hint = capturingKeybind == null
                     ? "Click a binding, then press a keyboard key or mouse button. ESC clears it."
@@ -675,6 +688,12 @@ public final class QysUtilsConfigScreen extends Screen {
     @Override
     public void onClose() {
         if (configDirty) persist();
-        Minecraft.getInstance().gui.setScreen(parent);
+        Minecraft client = Minecraft.getInstance();
+        client.gui.setScreen(parent);
+        // Gui.setScreen releases the pointer when this screen opens. Explicitly re-grab
+        // it when returning to gameplay, including after ESC was used to clear a bind.
+        if (parent == null && client.player != null) {
+            client.mouseHandler.grabMouse();
+        }
     }
 }

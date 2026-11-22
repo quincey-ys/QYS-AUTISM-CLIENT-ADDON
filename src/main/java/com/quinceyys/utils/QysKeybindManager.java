@@ -48,6 +48,8 @@ public final class QysKeybindManager {
         register("sprint_toggle", "Toggle Auto Sprint", sprintToggle);
         chatToggle = create("key.qys_utils.chat_toggle", InputConstants.KEY_U);
         register("chat_toggle", "Toggle Chat Game Guesser", chatToggle);
+        register("cart_trigger", "AutoTntCart: Trigger", AutoTntCartModule.triggerKey);
+        register("cart_mode", "AutoTntCart: Cycle Mode", AutoTntCartModule.modeKey);
 
         load();
         ClientTickEvents.END_CLIENT_TICK.register(QysKeybindManager::onEndTick);
@@ -162,6 +164,8 @@ public final class QysKeybindManager {
         setDefault("anchor_toggle", InputConstants.KEY_H);
         setDefault("sprint_toggle", InputConstants.KEY_P);
         setDefault("chat_toggle", InputConstants.KEY_U);
+        setDefault("cart_trigger", InputConstants.KEY_C);
+        setDefault("cart_mode", InputConstants.KEY_V);
         KeyMapping.resetMapping();
         save();
     }
