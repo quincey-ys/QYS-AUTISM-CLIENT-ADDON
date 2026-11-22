@@ -27,7 +27,7 @@ public final class ChatGameGuesserModule {
             "(?i)(-?\\d+(?:\\.\\d+)?)\\s*(\\+|plus|add|\\-|−|minus|subtract|\\*|x|×|times|multiply|/|÷|divide)\\s*(-?\\d+(?:\\.\\d+)?)"
     );
     private static final Pattern SCRAMBLE = Pattern.compile(
-            "(?i)(?:unscramble|unjumble|scramble(?:d)? word|rearrange(?: the letters)?)(?:\s+(?:this|the|following))?(?:\s+word)?\s*[:：-]?\s*([a-z]{3,18})\b"
+            "(?i)(?:unscramble|unjumble|scramble(?:d)? word|rearrange(?: the letters)?)(?:\\s+(?:this|the|following))?(?:\\s+word)?\\s*[:：-]?\\s*([a-z]{3,18})\\b"
     );
     private static final Pattern REVERSE = Pattern.compile(
             "(?i)(?:reverse|backwards|backward)(?: this| the| that)?(?: word| text|string)?\\s*[:：-]\\s*([\\p{L}\\p{N}]+)\\b"
