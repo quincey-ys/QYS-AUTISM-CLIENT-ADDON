@@ -258,7 +258,7 @@ public final class QysUtilsConfigScreen extends Screen {
 
     private void addButton(int x, int y, int width, String label,
                            java.util.function.Consumer<Button> action) {
-        Button button = Button.builder(Component.literal(fit(label, 31)), action)
+        Button button = Button.builder(Component.literal(fit(label, 31)), b -> action.accept(b))
                 .bounds(x, y, width, 20).build();
         addRenderableWidget(button);
     }
