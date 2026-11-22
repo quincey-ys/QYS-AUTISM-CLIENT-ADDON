@@ -23,8 +23,8 @@ import java.util.Properties;
 public final class MaceHitterModule {
     private static final Path CONFIG = Path.of("config", "qys-mace-hitter.properties");
 
-    private static KeyMapping toggleKey;
-    private static KeyMapping slamKey;
+    public static KeyMapping toggleKey;
+    public static KeyMapping slamKey;
 
     public static boolean enabled = false;
     public static double range = 3.2;
