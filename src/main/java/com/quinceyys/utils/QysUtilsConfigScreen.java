@@ -52,7 +52,7 @@ public final class QysUtilsConfigScreen extends Screen {
         int leftX = panelX + 14;
         int rightX = panelX + panelWidth / 2 + 4;
         int colWidth = panelWidth / 2 - 22;
-        int startY = panelY + 68;
+        int startY = panelY + (selectedTab == 2 ? 78 : 68);
         int rowHeight = 21;
 
         if (selectedTab == 0) {
@@ -122,10 +122,41 @@ public final class QysUtilsConfigScreen extends Screen {
             addToggle(leftX, y, colWidth, "Break Your Crystals",
                     () -> AutoPlaceCombatModule.autoBreakOwnCrystals,
                     v -> AutoPlaceCombatModule.autoBreakOwnCrystals = v); y += rowHeight;
-            addToggle(leftX, y, colWidth, "Auto Anchor Combo",
-                    () -> AutoPlaceCombatModule.autoDetonateOwnAnchors,
-                    v -> AutoPlaceCombatModule.autoDetonateOwnAnchors = v);
+            addToggle(leftX, y, colWidth, "Require Right-Click",
+                    () -> AutoPlaceCombatModule.crystalRequireUseHeld,
+                    v -> AutoPlaceCombatModule.crystalRequireUseHeld = v); y += rowHeight;
+            addIntStepper(leftX, y, colWidth, "Break Delay (ms)", 0, 1000, 25,
+                    () -> AutoPlaceCombatModule.crystalBreakDelayMs,
+                    v -> AutoPlaceCombatModule.crystalBreakDelayMs = v); y += rowHeight;
+            addIntStepper(leftX, y, colWidth, "Max Breaks/Sec", 1, 20, 1,
+                    () -> AutoPlaceCombatModule.crystalMaxBreaksPerSecond,
+                    v -> AutoPlaceCombatModule.crystalMaxBreaksPerSecond = v); y += rowHeight;
+            addIntStepper(leftX, y, colWidth, "Placement Window (ms)", 250, 5000, 250,
+                    () -> AutoPlaceCombatModule.crystalPlacementWindowMs,
+                    v -> AutoPlaceCombatModule.crystalPlacementWindowMs = v);
 
+            y = startY;
+            addToggle(rightX, y, colWidth, "Auto Anchor Combo",
+                    () -> AutoPlaceCombatModule.autoDetonateOwnAnchors,
+                    v -> AutoPlaceCombatModule.autoDetonateOwnAnchors = v); y += rowHeight;
+            addToggle(rightX, y, colWidth, "Require Right-Click",
+                    () -> AutoPlaceCombatModule.anchorRequireUseHeldAtDetonate,
+                    v -> AutoPlaceCombatModule.anchorRequireUseHeldAtDetonate = v); y += rowHeight;
+            addIntStepper(rightX, y, colWidth, "Place Delay (ms)", 0, 2000, 50,
+                    () -> AutoPlaceCombatModule.anchorPlaceDelayMs,
+                    v -> AutoPlaceCombatModule.anchorPlaceDelayMs = v); y += rowHeight;
+            addIntStepper(rightX, y, colWidth, "Switch Delay (ms)", 0, 2000, 50,
+                    () -> AutoPlaceCombatModule.anchorSwitchDelayMs,
+                    v -> AutoPlaceCombatModule.anchorSwitchDelayMs = v); y += rowHeight;
+            addIntStepper(rightX, y, colWidth, "Charge Delay (ms)", 0, 3000, 50,
+                    () -> AutoPlaceCombatModule.anchorChargeDelayMs,
+                    v -> AutoPlaceCombatModule.anchorChargeDelayMs = v); y += rowHeight;
+            addIntStepper(rightX, y, colWidth, "Detonate Delay (ms)", 0, 3000, 50,
+                    () -> AutoPlaceCombatModule.anchorDetonateDelayMs,
+                    v -> AutoPlaceCombatModule.anchorDetonateDelayMs = v); y += rowHeight;
+            addIntStepper(rightX, y, colWidth, "Combo Cooldown (ms)", 0, 5000, 100,
+                    () -> AutoPlaceCombatModule.anchorCooldownMs,
+                    v -> AutoPlaceCombatModule.anchorCooldownMs = v);
         }
 
         addRenderableWidget(Button.builder(Component.literal("DONE  •  SAVE SETTINGS"), b -> onClose())
@@ -263,16 +294,9 @@ public final class QysUtilsConfigScreen extends Screen {
         graphics.text(this.font, title, panelX + 16, panelY + 56, 0xFFE4EAF5, false);
 
         if (selectedTab == 2) {
-            int infoX = panelX + panelWidth / 2 + 18;
-            graphics.text(this.font, "CRYSTAL BREAK", infoX, panelY + 82, 0xFFE4EAF5, true);
-            graphics.text(this.font, "Only your own recent placement is matched.", infoX, panelY + 100, 0xFFD5DCEC, false);
-            graphics.text(this.font, "It breaks as soon as the entity loads,", infoX, panelY + 114, 0xFFD5DCEC, false);
-            graphics.text(this.font, "only while right-click is still held.", infoX, panelY + 128, 0xFFD5DCEC, false);
-            graphics.text(this.font, "No rotation or crystal aiming.", infoX, panelY + 142, 0xFFD5DCEC, false);
-            graphics.text(this.font, "ANCHOR COMBO", infoX, panelY + 174, 0xFFE4EAF5, true);
-            graphics.text(this.font, "Uses the first Glowstone in your hotbar,", infoX, panelY + 192, 0xFFD5DCEC, false);
-            graphics.text(this.font, "then returns to the anchor's original slot.", infoX, panelY + 206, 0xFFD5DCEC, false);
-            graphics.text(this.font, "Skipped where respawn anchors work.", infoX, panelY + 220, 0xFFD5DCEC, false);
+            graphics.text(this.font, "OWN-PLACED CRYSTALS", panelX + 18, panelY + 66, 0xFFE4EAF5, true);
+            graphics.text(this.font, "OWN-PLACED ANCHORS", panelX + panelWidth / 2 + 12,
+                    panelY + 66, 0xFFE4EAF5, true);
         }
     }
 
