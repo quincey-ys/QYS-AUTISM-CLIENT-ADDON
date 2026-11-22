@@ -17,6 +17,19 @@ import java.util.function.DoubleSupplier;
 
 public final class QysUtilsConfigScreen extends Screen {
     private static final int ROW_HEIGHT = 23;
+    private static boolean cursorRestorePending;
+
+    /** Called at END_CLIENT_TICK after Minecraft has completed the screen transition. */
+    public static void tickCursorRestore(Minecraft client) {
+        if (!cursorRestorePending) return;
+        if (client.gui.screen() == null && client.player != null) {
+            client.mouseHandler.grabMouse();
+            cursorRestorePending = false;
+        } else if (client.gui.screen() != null) {
+            // A different screen was opened before gameplay resumed; do not steal its cursor.
+            cursorRestorePending = false;
+        }
+    }
 
     private final Screen parent;
     private final int selectedTab;
@@ -693,7 +706,9 @@ public final class QysUtilsConfigScreen extends Screen {
         // Gui.setScreen releases the pointer when this screen opens. Explicitly re-grab
         // it when returning to gameplay, including after ESC was used to clear a bind.
         if (parent == null && client.player != null) {
-            client.mouseHandler.grabMouse();
+            // Do not grab during onClose: Minecraft may still be finishing the old
+            // screen teardown. The END_CLIENT_TICK callback does it after the transition.
+            cursorRestorePending = true;
         }
     }
 }
