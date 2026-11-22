@@ -67,6 +67,14 @@ public final class MaceHitterModule {
     }
 
     private static void onEndTick(Minecraft client) {
+        if (autoSwapPlayer != null && autoSwapPlayer != client.player) {
+            // A reconnect or world/player replacement invalidates the previous hotbar ownership.
+            autoSwapPlayer = null;
+            previousHotbarSlot = -1;
+            autoSelectedMaceSlot = -1;
+            autoSwapPausedByUser = false;
+        }
+
         // Never let a queued combat keypress fire after the user opens a menu or chat.
         if (client.gui.screen() != null) {
             while (toggleKey.consumeClick()) { }
@@ -74,7 +82,7 @@ public final class MaceHitterModule {
             releaseJump(client);
             if (client.player != null) {
                 restoreAutoSwap(client.player);
-                autoSwapPausedByUser = true;
+                autoSwapPausedByUser = false;
             }
             return;
         }
@@ -158,7 +166,11 @@ public final class MaceHitterModule {
 
     private static boolean ensureMace(LocalPlayer player) {
         if (player.getMainHandItem().getItem() instanceof MaceItem) return true;
-        if (!autoSwap || autoSwapPausedByUser) return false;
+        if (!autoSwap) {
+            restoreAutoSwap(player);
+            return false;
+        }
+        if (autoSwapPausedByUser) return false;
 
         int selectedSlot = player.getInventory().getSelectedSlot();
         if (autoSelectedMaceSlot >= 0 && selectedSlot != autoSelectedMaceSlot) {
