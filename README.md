@@ -12,6 +12,12 @@ Standalone Fabric client utility mod for Minecraft Java 26.3. This is one indepe
 - Optional Elytra ignore.
 - Existing AutoTotem settings are retained in config/autism-autototem.properties.
 
+### Auto Sprint
+- Automatically starts vanilla sprint while moving forward.
+- Stops forcing sprint when you stop, move backward, sneak, open a screen, or use an item when the item-use pause is enabled.
+- Does not change movement speed or send custom movement packets.
+- Disabled by default; settings are saved in config/qys-auto-sprint.properties.
+
 ### Mace Hitter
 - Nearest-target selection with configurable range.
 - Player-only or all-living-entity targeting.
@@ -30,7 +36,7 @@ Standalone Fabric client utility mod for Minecraft Java 26.3. This is one indepe
 
 ## Shared settings screen
 
-Press O to open the unified QYS-UTILS settings screen. It contains AutoTotem, Mace Hitter, and Crystal / Anchor tabs, opaque panels with squircle corners, and settings controls. The screen uses a bundled anti-aliased Lato font so it does not depend on fonts installed on your computer. Changes save immediately and again when the screen closes. Crystal / Anchor settings are split into own-crystal and own-anchor columns; changes are saved to qys-auto-place-combat.properties.
+Press O to open the unified QYS-UTILS settings screen. It contains AutoTotem, Mace Hitter, Crystal / Anchor, and Movement tabs, opaque panels with squircle corners, and settings controls. The screen uses a bundled anti-aliased Lato font so it does not depend on fonts installed on your computer. Changes save immediately and again when the screen closes. Crystal / Anchor settings are split into own-crystal and own-anchor columns; changes are saved to qys-auto-place-combat.properties.
 
 ## Keybinds
 - T: Toggle AutoTotem
@@ -44,6 +50,7 @@ All keybinds can be changed under Options > Controls > Key Binds.
 - config/autism-autototem.properties
 - config/qys-mace-hitter.properties
 - config/qys-auto-place-combat.properties (Crystal and Anchor delays/rate limits)
+- config/qys-auto-sprint.properties (Auto Sprint settings)
 
 The AutoTotem config filename and property names are kept compatible with the original QYS AutoTotem config.
 
