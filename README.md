@@ -34,7 +34,7 @@ Standalone Fabric client utility mod for Minecraft Java 26.3. This is one indepe
 - Configurable attack delay and manual Slam Now action.
 
 ### Chat Game Guesser
-- Recognizes supported math questions, Minecraft word scrambles, reversed-text prompts, typing prompts, and a built-in set of Minecraft trivia.
+- Recognizes supported math questions, Minecraft word scrambles, reversed-text prompts, typing prompts, higher/lower number guessing, and a built-in set of Minecraft trivia.
 - Configurable answer delay and minimum interval between answers.
 - Suggestion-only mode displays the answer in the action bar; Auto Send is a separate setting and is off by default.
 - Disabled by default; settings are stored in config/qys-chat-game-guesser.properties.
