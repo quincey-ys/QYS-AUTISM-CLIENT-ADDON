@@ -65,12 +65,18 @@ public final class AutoTotemModule {
     }
 
     private static void onEndTick(Minecraft client) {
-        while (toggleKey.consumeClick()) {
-            enabled = !enabled;
-            saveConfig();
-        }
-        while (configKey.consumeClick()) {
-            client.gui.setScreen(new QysUtilsConfigScreen(client.gui.screen()));
+        if (client.gui.screen() == null) {
+            while (toggleKey.consumeClick()) {
+                enabled = !enabled;
+                saveConfig();
+            }
+            while (configKey.consumeClick()) {
+                client.gui.setScreen(new QysUtilsConfigScreen(client.gui.screen()));
+            }
+        } else {
+            // Ignore presses made while typing or using a menu instead of replaying them later.
+            while (toggleKey.consumeClick()) { }
+            while (configKey.consumeClick()) { }
         }
 
         LocalPlayer player = client.player;

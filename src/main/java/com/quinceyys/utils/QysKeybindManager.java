@@ -27,8 +27,6 @@ public final class QysKeybindManager {
     private static KeyMapping anchorToggle;
     private static KeyMapping sprintToggle;
     private static KeyMapping chatToggle;
-    private static KeyMapping tntToggle;
-    private static KeyMapping tntActivate;
 
     private QysKeybindManager() {}
 
@@ -50,10 +48,6 @@ public final class QysKeybindManager {
         register("sprint_toggle", "Toggle Auto Sprint", sprintToggle);
         chatToggle = create("key.qys_utils.chat_toggle", InputConstants.KEY_U);
         register("chat_toggle", "Toggle Chat Game Guesser", chatToggle);
-        tntToggle = create("key.qys_utils.tnt_toggle", InputConstants.KEY_I);
-        register("tnt_toggle", "Toggle Auto TNT Cart", tntToggle);
-        tntActivate = create("key.qys_utils.tnt_activate", InputConstants.KEY_Y);
-        register("tnt_activate", "Auto TNT Cart: Activate on targeted rail", tntActivate);
 
         load();
         ClientTickEvents.END_CLIENT_TICK.register(QysKeybindManager::onEndTick);
@@ -74,6 +68,15 @@ public final class QysKeybindManager {
     private static final Map<String, String> LABELS = new LinkedHashMap<>();
 
     private static void onEndTick(Minecraft client) {
+        if (client.gui.screen() != null) {
+            // Do not toggle modules while the user is typing or interacting with a screen.
+            // Drain queued presses so they cannot fire after the screen closes.
+            for (KeyMapping mapping : BINDINGS.values()) {
+                while (mapping.consumeClick()) { }
+            }
+            return;
+        }
+
         if (aimToggle.consumeClick()) {
             CombatAssistModule.aimAssistEnabled = !CombatAssistModule.aimAssistEnabled;
             CombatAssistModule.saveConfig();
@@ -97,12 +100,6 @@ public final class QysKeybindManager {
         if (chatToggle.consumeClick()) {
             ChatGameGuesserModule.enabled = !ChatGameGuesserModule.enabled;
             ChatGameGuesserModule.saveConfig();
-        }
-        if (tntToggle.consumeClick()) {
-            AutoTntCartModule.setEnabled(!AutoTntCartModule.enabled);
-        }
-        if (tntActivate.consumeClick()) {
-            AutoTntCartModule.activateAtCrosshair(client);
         }
     }
 
@@ -147,19 +144,25 @@ public final class QysKeybindManager {
         save();
     }
 
+    private static void setDefault(String id, int keyCode) {
+        KeyMapping mapping = BINDINGS.get(id);
+        if (mapping != null) {
+            mapping.setKey(InputConstants.Type.KEYBOARD.getOrCreate(keyCode));
+        }
+    }
+
     public static void resetDefaults() {
-        setKey("open_gui", InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_O));
-        setKey("autototem_toggle", InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_T));
-        setKey("mace_toggle", InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_R));
-        setKey("mace_slam", InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_G));
-        setKey("aim_toggle", InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_K));
-        setKey("trigger_toggle", InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_L));
-        setKey("crystal_toggle", InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_J));
-        setKey("anchor_toggle", InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_H));
-        setKey("sprint_toggle", InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_P));
-        setKey("chat_toggle", InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_U));
-        setKey("tnt_toggle", InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_I));
-        setKey("tnt_activate", InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_Y));
+        setDefault("open_gui", InputConstants.KEY_O);
+        setDefault("autototem_toggle", InputConstants.KEY_T);
+        setDefault("mace_toggle", InputConstants.KEY_R);
+        setDefault("mace_slam", InputConstants.KEY_G);
+        setDefault("aim_toggle", InputConstants.KEY_K);
+        setDefault("trigger_toggle", InputConstants.KEY_L);
+        setDefault("crystal_toggle", InputConstants.KEY_J);
+        setDefault("anchor_toggle", InputConstants.KEY_H);
+        setDefault("sprint_toggle", InputConstants.KEY_P);
+        setDefault("chat_toggle", InputConstants.KEY_U);
+        KeyMapping.resetMapping();
         save();
     }
 
