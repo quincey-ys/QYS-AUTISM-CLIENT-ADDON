@@ -56,7 +56,7 @@ public final class CombatAssistModule {
     private static void onEndTick(Minecraft client) {
         LocalPlayer player = client.player;
         if (player == null || client.level == null || client.gameMode == null
-                || !player.isAlive() || client.screen != null) {
+                || !player.isAlive() || client.gui.screen() != null) {
             return;
         }
 
