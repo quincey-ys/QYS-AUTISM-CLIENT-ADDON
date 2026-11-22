@@ -106,6 +106,7 @@ public final class AutoPlaceCombatModule {
 
     private static void onEndTick(Minecraft client) {
         if (client.level == null || client.player == null) {
+            restorePendingAnchorSlot(client);
             crystalPlacements.clear();
             pendingCrystalBreaks.clear();
             anchorPlacements.clear();
@@ -114,6 +115,7 @@ public final class AutoPlaceCombatModule {
         }
 
         if (lastLevel != client.level) {
+            restorePendingAnchorSlot(client);
             crystalPlacements.clear();
             pendingCrystalBreaks.clear();
             anchorPlacements.clear();
@@ -209,6 +211,13 @@ public final class AutoPlaceCombatModule {
 
             switch (attempt.phase) {
                 case WAIT_FOR_PLACE -> {
+                    // Do not take over the hotbar if the player has already switched away
+                    // from the anchor they placed.
+                    if (player.getInventory().getSelectedSlot() != attempt.anchorSlot) {
+                        iterator.remove();
+                        continue;
+                    }
+
                     long earliestStart = Math.max(
                             attempt.createdAt + anchorPlaceDelayMs,
                             lastAnchorStartedAt + anchorCooldownMs
